@@ -17,7 +17,7 @@ public class Product : Entity<Guid>
         // Required for EF Core, but we don't want it to be used directly
     }
 
-    public Product(string name, string description, Uri? imageUrl, Money price, int stockQuantity), string category : base(Guid.NewGuid())
+    public Product(string name, string description, Uri? imageUrl, Money price, int stockQuantity, string category)  : base(Guid.NewGuid())
     {
         // Validate parameters
         if (string.IsNullOrWhiteSpace(name))
