@@ -1,12 +1,38 @@
 using System.Reflection;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
+using MerchStore.WebUI.Authentication.ApiKey;
 using Microsoft.OpenApi.Models;
+using MerchStore.WebUI.Infrastructure;
+using System.Text.Json.Serialization;
+using MerchStore.WebUI.Endpoints;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Use snake_case for JSON serialization
+        options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+// Add API Key authentication
+builder.Services.AddAuthentication()
+   .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
+
+// Add API Key authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiKeyPolicy", policy =>
+        policy.AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+              .RequireAuthenticatedUser());
+});
 
 // Add Application services - this includes Services, Interfaces, etc.
 builder.Services.AddApplication();
@@ -22,21 +48,33 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "MerchStore API",
         Version = "v1",
-        Description = "API for MerchStore product catalog",
-        Contact = new OpenApiContact
-        {
-            Name = "MerchStore Support",
-            Email = "support@merchstore.example.com"
-        }
+        Description = "API for MerchStore product catalog"
     });
 
-    // Include XML comments if you've enabled XML documentation in your project
+    // Include XML comments if you've enabled XML documentation
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
     {
         options.IncludeXmlComments(xmlPath);
     }
+
+    // Configure operation IDs for minimal APIs to avoid conflicts
+    options.CustomOperationIds(apiDesc =>
+    {
+        return apiDesc.ActionDescriptor?.DisplayName;
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin()  // Allow requests from any origin
+                   .AllowAnyHeader()  // Allow any headers
+                   .AllowAnyMethod(); // Allow any HTTP method
+        });
 });
 
 var app = builder.Build();
@@ -62,10 +100,13 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseCors("AllowAllOrigins");
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
@@ -73,5 +114,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapMinimalProductEndpoints();
 
 app.Run();
