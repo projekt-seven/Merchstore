@@ -384,4 +384,97 @@ public class ProductTests
         // Act & Assert
         Assert.Throws<ArgumentException>(() => product.IncrementStock(-1));
     }
+
+    // Test boundary for name length (exactly 100 characters)
+    [Fact]
+    public void Constructor_WithNameAtMaxLength_CreatesProduct()
+    {
+        // Arrange
+        string name = new string('A', 100);
+        string description = "Test Description";
+        var imageUrl = new Uri("https://example.com/image.jpg");
+        var price = new Money(19.99m, "USD");
+        int stockQuantity = 10;
+        string category = "Test Category";
+
+        // Act
+        var product = new Product(name, description, imageUrl, price, stockQuantity, category);
+
+        // Assert
+        Assert.Equal(name, product.Name);
+    }
+
+    // Test boundary for description length (exactly 500 characters)
+    [Fact]
+    public void Constructor_WithDescriptionAtMaxLength_CreatesProduct()
+    {
+        // Arrange
+        string name = "Test Product";
+        string description = new string('A', 500);
+        var imageUrl = new Uri("https://example.com/image.jpg");
+        var price = new Money(19.99m, "USD");
+        int stockQuantity = 10;
+        string category = "Test Category";
+
+        // Act
+        var product = new Product(name, description, imageUrl, price, stockQuantity, category);
+
+        // Assert
+        Assert.Equal(description, product.Description);
+    }
+
+    // Test boundary for image URL length (exactly 2000 characters)
+    [Fact]
+    public void Constructor_WithImageUrlAtMaxLength_CreatesProduct()
+    {
+        // Arrange
+        string name = "Test Product";
+        string description = "Test Description";
+        string longUrl = "https://example.com/" + new string('a', 1980) + ".jpg";
+        var imageUrl = new Uri(longUrl);
+        var price = new Money(19.99m, "USD");
+        int stockQuantity = 10;
+        string category = "Test Category";
+
+        // Act
+        var product = new Product(name, description, imageUrl, price, stockQuantity, category);
+
+        // Assert
+        Assert.Equal(imageUrl, product.ImageUrl);
+    }
+
+    // Test invalid image URL extension
+    [Fact]
+    public void Constructor_WithInvalidImageUrlExtension_ThrowsArgumentException()
+    {
+        // Arrange
+        string name = "Test Product";
+        string description = "Test Description";
+        var imageUrl = new Uri("https://example.com/image.txt");
+        var price = new Money(19.99m, "USD");
+        int stockQuantity = 10;
+        string category = "Test Category";
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new Product(name, description, imageUrl, price, stockQuantity, category));
+
+        Assert.Contains("Image URL must point to a valid image file", exception.Message);
+    }
+
+    // Test decrementing stock to exactly 0
+    [Fact]
+    public void DecrementStock_ToZero_Succeeds()
+    {
+        // Arrange
+        var product = CreateValidProduct();
+        int initialStock = product.StockQuantity;
+
+        // Act
+        bool result = product.DecrementStock(initialStock);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(0, product.StockQuantity);
+    }
 }
