@@ -117,4 +117,83 @@ public class MoneyTests
         // Act & Assert
         Assert.NotEqual(money1, money2);
     }
+
+    [Theory]
+    [InlineData(10.5, 2, 21.0)]
+    [InlineData(0, 5, 0)]
+    [InlineData(100, 0, 0)]
+    public void MultiplyOperator_WithIntegerMultiplier_ReturnsCorrectResult(decimal amount, int multiplier, decimal expectedAmount)
+    {
+        // Arrange
+        var money = new Money(amount, "USD");
+
+        // Act
+        var result = money * multiplier;
+
+        // Assert
+        Assert.Equal(expectedAmount, result.Amount);
+        Assert.Equal("USD", result.Currency);
+    }
+
+    [Theory]
+    [InlineData(10.5, 1.5, 15.75)]
+    [InlineData(0, 2.5, 0)]
+    [InlineData(100, 0.5, 50)]
+    public void MultiplyOperator_WithDecimalMultiplier_ReturnsCorrectResult(decimal amount, decimal multiplier, decimal expectedAmount)
+    {
+        // Arrange
+        var money = new Money(amount, "USD");
+
+        // Act
+        var result = money * multiplier;
+
+        // Assert
+        Assert.Equal(expectedAmount, result.Amount);
+        Assert.Equal("USD", result.Currency);
+    }
+
+    [Fact]
+    public void MultiplyOperator_WithNegativeDecimalMultiplier_ThrowsArgumentException()
+    {
+        // Arrange
+        var money = new Money(10.5m, "USD");
+        decimal multiplier = -1.5m;
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => money * multiplier);
+    }
+
+    [Theory]
+    [InlineData(2, 10.5, 21.0)]
+    [InlineData(0, 10.5, 0)]
+    [InlineData(5, 0, 0)]
+    public void MultiplyOperator_CommutativeWithInteger_ReturnsCorrectResult(int multiplier, decimal amount, decimal expectedAmount)
+    {
+        // Arrange
+        var money = new Money(amount, "USD");
+
+        // Act
+        var result = multiplier * money;
+
+        // Assert
+        Assert.Equal(expectedAmount, result.Amount);
+        Assert.Equal("USD", result.Currency);
+    }
+
+    [Theory]
+    [InlineData(1.5, 10.5, 15.75)]
+    [InlineData(0, 10.5, 0)]
+    [InlineData(0.5, 100, 50)]
+    public void MultiplyOperator_CommutativeWithDecimal_ReturnsCorrectResult(decimal multiplier, decimal amount, decimal expectedAmount)
+    {
+        // Arrange
+        var money = new Money(amount, "USD");
+
+        // Act
+        var result = multiplier * money;
+
+        // Assert
+        Assert.Equal(expectedAmount, result.Amount);
+        Assert.Equal("USD", result.Currency);
+    }
 }
