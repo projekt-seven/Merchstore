@@ -430,7 +430,7 @@ public class ProductTests
         // Arrange
         string name = "Test Product";
         string description = "Test Description";
-        string longUrl = "https://example.com/" + new string('a', 1980) + ".jpg";
+        string longUrl = "https://example.com/" + new string('a', 1970) + ".jpg"; // Adjusted to fit within URI limits
         var imageUrl = new Uri(longUrl);
         var price = new Money(19.99m, "USD");
         int stockQuantity = 10;
