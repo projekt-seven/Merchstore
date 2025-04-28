@@ -30,4 +30,18 @@ public class OrderItem
 
         Quantity = newQuantity;
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is OrderItem other)
+        {
+            return ProductId == other.ProductId && Quantity == other.Quantity && UnitPrice.Equals(other.UnitPrice);
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(ProductId, Quantity, UnitPrice);
+    }
 }
