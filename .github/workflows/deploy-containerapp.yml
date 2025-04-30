@@ -34,5 +34,4 @@ jobs:
           az containerapp update \
             --name northwaddleapp \
             --resource-group NorthWaddleRG \
-            --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest \
-            --ingress external
+            --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest
