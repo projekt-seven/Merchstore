@@ -1,7 +1,8 @@
 namespace MerchStore.Domain.Entities;
 
-public record CustomerInfo
+public record Customer
 {
+    public Guid Id { get; private set; } = Guid.NewGuid();
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
@@ -11,12 +12,12 @@ public record CustomerInfo
     public string PostalCode { get; private set; } = string.Empty;
 
     // Constructor for EF Core
-    public CustomerInfo()
+    public Customer()
     {
         // Required for EF Core, but we don't want it to be used directly
     }
 
-    public CustomerInfo(string firstName, string lastName, string email, string phoneNumber, string address, string city, string postalCode)
+    public Customer(string firstName, string lastName, string email, string phoneNumber, string address, string city, string postalCode)
     {
         // Validate parameters
         if (string.IsNullOrWhiteSpace(firstName))

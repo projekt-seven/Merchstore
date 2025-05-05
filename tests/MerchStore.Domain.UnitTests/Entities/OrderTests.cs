@@ -10,37 +10,23 @@ public class OrderTests
     public void Constructor_ValidParameters_ShouldCreateOrder()
     {
         // Arrange
-        var customerId = Guid.NewGuid();
-        var customerInfo = new CustomerInfo("John", "Doe", "john.doe@example.com", "1234567890", "123 Street", "City", "12345");
+        var customer = CreateCustomer();
 
         // Act
-        var order = new Order(customerId, customerInfo);
+        var order = new Order(customer);
 
         // Assert
-        Assert.Equal(customerId, order.CustomerId);
-        Assert.Equal(customerInfo, order.CustomerInfo);
+        Assert.NotNull(order);
+        Assert.Equal(customer, order.Customer);
         Assert.Empty(order.Items);
         Assert.Equal(Order.OrderStatus.Pending, order.Status);
     }
 
     [Fact]
-    public void Constructor_InvalidCustomerId_ShouldThrowException()
+    public void Constructor_NullCustomer_ShouldThrowException()
     {
-        // Arrange
-        var customerInfo = new CustomerInfo("John", "Doe", "john.doe@example.com", "1234567890", "123 Street", "City", "12345");
-
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new Order(Guid.Empty, customerInfo));
-    }
-
-    [Fact]
-    public void Constructor_NullCustomerInfo_ShouldThrowException()
-    {
-        // Arrange
-        var customerId = Guid.NewGuid();
-
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new Order(customerId, null!));
+        Assert.Throws<ArgumentNullException>(() => new Order(null!));
     }
 
     [Fact]
@@ -156,8 +142,20 @@ public class OrderTests
 
     private Order CreateOrder()
     {
-        var customerId = Guid.NewGuid();
-        var customerInfo = new CustomerInfo("John", "Doe", "john.doe@example.com", "1234567890", "123 Street", "City", "12345");
-        return new Order(customerId, customerInfo);
+        var customer = CreateCustomer();
+        return new Order(customer);
+    }
+
+    private Customer CreateCustomer()
+    {
+        return new Customer(
+            "John",
+            "Doe",
+            "john.doe@example.com",
+            "1234567890",
+            "123 Street",
+            "City",
+            "12345"
+        );
     }
 }

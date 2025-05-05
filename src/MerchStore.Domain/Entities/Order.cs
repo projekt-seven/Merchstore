@@ -11,28 +11,20 @@ public class Order : Entity<Guid>
         Completed,
         Cancelled
     }
-    public Guid CustomerId { get; private set; }
+
+    public Customer Customer { get; private set; }
     private readonly List<OrderItem> _items = new List<OrderItem>();
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
     public Money TotalPrice { get; private set; } = Money.FromSEK(0);
     public DateTime OrderDate { get; private set; } = DateTime.UtcNow;
     public OrderStatus Status { get; private set; } = OrderStatus.Pending;
-    public CustomerInfo CustomerInfo { get; private set; } = new CustomerInfo();
 
-    private Order()
+    private Order() {} // Required for EF Core
+
+    public Order(Customer customer) : base(Guid.NewGuid())
     {
-        // Required for EF Core
-    }
-
-    public Order(Guid customerId, CustomerInfo customerInfo) : base(Guid.NewGuid())
-    {
-        if (customerId == Guid.Empty)
-            throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
-
-        ArgumentNullException.ThrowIfNull(customerInfo, nameof(customerInfo));
-
-        CustomerId = customerId;
-        CustomerInfo = customerInfo;
+        ArgumentNullException.ThrowIfNull(customer, nameof(customer));
+        Customer = customer;
     }
 
     public void AddItem(OrderItem item)

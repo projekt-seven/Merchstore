@@ -14,17 +14,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         // Configure the primary key
         builder.HasKey(o => o.Id);
 
-        // Configure the foreign key relationship with CustomerInfo
-        builder.OwnsOne(o => o.CustomerInfo, ci =>
-        {
-            ci.Property(c => c.FirstName).IsRequired();
-            ci.Property(c => c.LastName).IsRequired();
-            ci.Property(c => c.Email).IsRequired();
-            ci.Property(c => c.PhoneNumber).IsRequired();
-            ci.Property(c => c.Address).IsRequired();
-            ci.Property(c => c.City).IsRequired();
-            ci.Property(c => c.PostalCode).IsRequired();
-        });
+        builder.HasOne(o => o.Customer)
+            .WithMany()
+            .HasForeignKey("CustomerId")
+            .IsRequired();
 
         // Configure the foreign key relationship with OrderItem
         builder.HasMany(o => o.Items)

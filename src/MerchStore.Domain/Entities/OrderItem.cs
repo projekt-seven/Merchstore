@@ -4,15 +4,13 @@ namespace MerchStore.Domain.Entities;
 
 public class OrderItem
 {
+    public Order Order { get; private set; }
     public Guid Id { get; private set; }
     public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
     public Money UnitPrice { get; private set; }
     public Money TotalPrice => UnitPrice * Quantity;
-
-    // Add this navigation property
-    public Order Order { get; private set; } // Navigation property to Order
 
     private OrderItem() { }
 

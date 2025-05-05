@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     /// </summary>
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<Customer> Customers { get; set; } // Add DbSet for Customer
 
     /// <summary>
     /// Constructor that accepts DbContextOptions, which allows for configuration to be passed in.
@@ -37,7 +38,6 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Apply entity configurations from the current assembly
-        // This scans for all IEntityTypeConfiguration implementations and applies them
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // Configure a value converter for the Money type
@@ -46,12 +46,18 @@ public class AppDbContext : DbContext
             v => Money.FromSEK(v) // Convert decimal back to Money when reading
         );
 
-        // Apply the converter to the TotalPrice property in Order
+        // Configure Order entity
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Customer)
+            .WithMany()
+            .HasForeignKey("CustomerId")
+            .IsRequired(); // Ensure Customer is required
+
         modelBuilder.Entity<Order>()
             .Property(o => o.TotalPrice)
             .HasConversion(moneyConverter);
 
-        // Apply the converter to the UnitPrice property in OrderItem
+        // Configure OrderItem entity
         modelBuilder.Entity<OrderItem>()
             .Property(oi => oi.UnitPrice)
             .HasConversion(moneyConverter);

@@ -153,39 +153,23 @@ public class AppDbContextSeeder
                 return;
             }
 
-            var orders = new List<Order>
+            // Create customers
+            var customers = new List<Customer>
             {
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("John", "Doe", "john.doe@example.com", "1234567890", "123 Elm St", "Springfield", "12345")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Jane", "Smith", "jane.smith@example.com", "0987654321", "456 Oak St", "Shelbyville", "54321")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Alice", "Johnson", "alice.johnson@example.com", "1122334455", "789 Pine St", "Capital City", "67890")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Bob", "Brown", "bob.brown@example.com", "2233445566", "321 Maple St", "Ogdenville", "98765")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Charlie", "Davis", "charlie.davis@example.com", "3344556677", "654 Birch St", "North Haverbrook", "87654")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Diana", "Evans", "diana.evans@example.com", "4455667788", "987 Cedar St", "Springfield", "76543")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Eve", "Foster", "eve.foster@example.com", "5566778899", "123 Aspen St", "Shelbyville", "65432")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Frank", "Green", "frank.green@example.com", "6677889900", "456 Willow St", "Capital City", "54321")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Grace", "Harris", "grace.harris@example.com", "7788990011", "789 Redwood St", "Ogdenville", "43210")),
-                new Order(
-                    Guid.NewGuid(),
-                    new CustomerInfo("Henry", "Irwin", "henry.irwin@example.com", "8899001122", "321 Spruce St", "North Haverbrook", "32109"))
+                new Customer("Johan", "Svensson", "johan.svensson@example.com", "0701234567", "Storgatan 1", "Stockholm", "11122"),
+                new Customer("Anna", "Karlsson", "anna.karlsson@example.com", "0707654321", "Långgatan 5", "Göteborg", "41123"),
+                new Customer("Erik", "Johansson", "erik.johansson@example.com", "0709876543", "Kyrkogatan 3", "Malmö", "21124"),
+                new Customer("Maria", "Andersson", "maria.andersson@example.com", "0706543210", "Västra Hamngatan 7", "Uppsala", "75125"),
+                new Customer("Lars", "Nilsson", "lars.nilsson@example.com", "0703210987", "Östra Långgatan 9", "Västerås", "72126"),
+                new Customer("Karin", "Bergström", "karin.bergstrom@example.com", "0704321098", "Kungsgatan 11", "Örebro", "70127"),
+                new Customer("Olof", "Lindgren", "olof.lindgren@example.com", "0705432109", "Drottninggatan 13", "Linköping", "58128"),
+                new Customer("Sofia", "Eriksson", "sofia.eriksson@example.com", "0706543211", "Nygatan 15", "Helsingborg", "25129"),
+                new Customer("Gustav", "Persson", "gustav.persson@example.com", "0707654322", "Södra Vägen 17", "Jönköping", "55130"),
+                new Customer("Elin", "Olsson", "elin.olsson@example.com", "0708765432", "Norra Långgatan 19", "Lund", "22131")
             };
+
+            // Create orders for each customer
+            var orders = customers.Select(customer => new Order(customer)).ToList();
 
             // Use reflection to set the OrderDate property
             var orderDateProperty = typeof(Order).GetProperty("OrderDate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
