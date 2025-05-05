@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MerchStore.Domain.Entities;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Infrastructure.Persistence;
 
@@ -14,6 +16,7 @@ public class AppDbContext : DbContext
     /// Each DbSet typically corresponds to a database table.
     /// </summary>
     public DbSet<Product> Products { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     /// <summary>
     /// Constructor that accepts DbContextOptions, which allows for configuration to be passed in.
@@ -36,5 +39,21 @@ public class AppDbContext : DbContext
         // Apply entity configurations from the current assembly
         // This scans for all IEntityTypeConfiguration implementations and applies them
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        // Configure a value converter for the Money type
+        var moneyConverter = new ValueConverter<Money, decimal>(
+            v => v.Amount, // Convert Money to decimal for storage
+            v => Money.FromSEK(v) // Convert decimal back to Money when reading
+        );
+
+        // Apply the converter to the TotalPrice property in Order
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalPrice)
+            .HasConversion(moneyConverter);
+
+        // Apply the converter to the UnitPrice property in OrderItem
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPrice)
+            .HasConversion(moneyConverter);
     }
 }

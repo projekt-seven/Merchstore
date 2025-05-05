@@ -4,10 +4,17 @@ namespace MerchStore.Domain.Entities;
 
 public class OrderItem
 {
+    public Guid Id { get; private set; }
+    public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
     public Money UnitPrice { get; private set; }
     public Money TotalPrice => UnitPrice * Quantity;
+
+    // Add this navigation property
+    public Order Order { get; private set; } // Navigation property to Order
+
+    private OrderItem() { }
 
     public OrderItem(Guid productId, int quantity, Money unitPrice)
     {
@@ -18,6 +25,7 @@ public class OrderItem
         if (unitPrice == null || unitPrice.Amount <= 0)
             throw new ArgumentException("Unit price must be greater than zero.", nameof(unitPrice));
 
+        Id = Guid.NewGuid();
         ProductId = productId;
         Quantity = quantity;
         UnitPrice = unitPrice;
@@ -31,17 +39,25 @@ public class OrderItem
         Quantity = newQuantity;
     }
 
+    public void UpdateUnitPrice(Money newUnitPrice)
+    {
+        if (newUnitPrice == null || newUnitPrice.Amount <= 0)
+            throw new ArgumentException("Unit price must be greater than zero.", nameof(newUnitPrice));
+
+        UnitPrice = newUnitPrice;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is OrderItem other)
         {
-            return ProductId == other.ProductId && Quantity == other.Quantity && UnitPrice.Equals(other.UnitPrice);
+            return Id == other.Id; // Compare by unique identifier
         }
         return false;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(ProductId, Quantity, UnitPrice);
+        return Id.GetHashCode();
     }
 }

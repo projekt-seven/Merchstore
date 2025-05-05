@@ -7,13 +7,18 @@ namespace MerchStore.Domain.UnitTests.Entities
     public class OrderItemTests
     {
         [Fact]
-        public void Equals_SameValues_ReturnsTrue()
+        public void Equals_SameId_ReturnsTrue()
         {
             // Arrange
             var productId = Guid.NewGuid();
             var unitPrice = new Money(10.0m, "SEK");
             var orderItem1 = new OrderItem(productId, 5, unitPrice);
             var orderItem2 = new OrderItem(productId, 5, unitPrice);
+
+            // Set the same Id for both items
+            var id = Guid.NewGuid();
+            typeof(OrderItem).GetProperty("Id")!.SetValue(orderItem1, id);
+            typeof(OrderItem).GetProperty("Id")!.SetValue(orderItem2, id);
 
             // Act
             var result = orderItem1.Equals(orderItem2);
@@ -23,43 +28,13 @@ namespace MerchStore.Domain.UnitTests.Entities
         }
 
         [Fact]
-        public void Equals_DifferentProductId_ReturnsFalse()
-        {
-            // Arrange
-            var unitPrice = new Money(10.0m, "SEK");
-            var orderItem1 = new OrderItem(Guid.NewGuid(), 5, unitPrice);
-            var orderItem2 = new OrderItem(Guid.NewGuid(), 5, unitPrice);
-
-            // Act
-            var result = orderItem1.Equals(orderItem2);
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void Equals_DifferentQuantity_ReturnsFalse()
+        public void Equals_DifferentId_ReturnsFalse()
         {
             // Arrange
             var productId = Guid.NewGuid();
             var unitPrice = new Money(10.0m, "SEK");
             var orderItem1 = new OrderItem(productId, 5, unitPrice);
-            var orderItem2 = new OrderItem(productId, 10, unitPrice);
-
-            // Act
-            var result = orderItem1.Equals(orderItem2);
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void Equals_DifferentUnitPrice_ReturnsFalse()
-        {
-            // Arrange
-            var productId = Guid.NewGuid();
-            var orderItem1 = new OrderItem(productId, 5, new Money(10.0m, "SEK"));
-            var orderItem2 = new OrderItem(productId, 5, new Money(20.0m, "SEK"));
+            var orderItem2 = new OrderItem(productId, 5, unitPrice);
 
             // Act
             var result = orderItem1.Equals(orderItem2);
@@ -97,6 +72,43 @@ namespace MerchStore.Domain.UnitTests.Entities
 
             // Assert
             Assert.False(result);
+        }
+
+        [Fact]
+        public void GetHashCode_SameId_ReturnsSameHashCode()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+            var unitPrice = new Money(10.0m, "SEK");
+            var orderItem1 = new OrderItem(productId, 5, unitPrice);
+            var orderItem2 = new OrderItem(productId, 5, unitPrice);
+
+            // Set the same Id for both items
+            var id = Guid.NewGuid();
+            typeof(OrderItem).GetProperty("Id")!.SetValue(orderItem1, id);
+            typeof(OrderItem).GetProperty("Id")!.SetValue(orderItem2, id);
+
+            // Act
+            var hashCode1 = orderItem1.GetHashCode();
+            var hashCode2 = orderItem2.GetHashCode();
+
+            // Assert
+            Assert.Equal(hashCode1, hashCode2);
+        }
+
+        [Fact]
+        public void GetHashCode_DifferentId_ReturnsDifferentHashCodes()
+        {
+            // Arrange
+            var orderItem1 = new OrderItem(Guid.NewGuid(), 5, new Money(10.0m, "SEK"));
+            var orderItem2 = new OrderItem(Guid.NewGuid(), 5, new Money(10.0m, "SEK"));
+
+            // Act
+            var hashCode1 = orderItem1.GetHashCode();
+            var hashCode2 = orderItem2.GetHashCode();
+
+            // Assert
+            Assert.NotEqual(hashCode1, hashCode2);
         }
 
         [Fact]
@@ -144,49 +156,17 @@ namespace MerchStore.Domain.UnitTests.Entities
         }
 
         [Fact]
-public void TotalPrice_CalculatesCorrectly()
-{
-    // Arrange
-    var unitPrice = new Money(10.0m, "SEK");
-    var orderItem = new OrderItem(Guid.NewGuid(), 5, unitPrice);
-
-    // Act
-    var totalPrice = orderItem.TotalPrice;
-
-    // Assert
-    Assert.Equal(new Money(50.0m, "SEK"), totalPrice);
-}
-
-        [Fact]
-        public void GetHashCode_SameValues_ReturnsSameHashCode()
+        public void TotalPrice_CalculatesCorrectly()
         {
             // Arrange
-            var productId = Guid.NewGuid();
             var unitPrice = new Money(10.0m, "SEK");
-            var orderItem1 = new OrderItem(productId, 5, unitPrice);
-            var orderItem2 = new OrderItem(productId, 5, unitPrice);
+            var orderItem = new OrderItem(Guid.NewGuid(), 5, unitPrice);
 
             // Act
-            var hashCode1 = orderItem1.GetHashCode();
-            var hashCode2 = orderItem2.GetHashCode();
+            var totalPrice = orderItem.TotalPrice;
 
             // Assert
-            Assert.Equal(hashCode1, hashCode2);
+            Assert.Equal(new Money(50.0m, "SEK"), totalPrice);
         }
-
-        [Fact]
-        public void GetHashCode_DifferentValues_ReturnsDifferentHashCodes()
-        {
-            // Arrange
-            var orderItem1 = new OrderItem(Guid.NewGuid(), 5, new Money(10.0m, "SEK"));
-            var orderItem2 = new OrderItem(Guid.NewGuid(), 10, new Money(20.0m, "SEK"));
-
-            // Act
-            var hashCode1 = orderItem1.GetHashCode();
-            var hashCode2 = orderItem2.GetHashCode();
-
-            // Assert
-            Assert.NotEqual(hashCode1, hashCode2);
-        }   
     }
 }

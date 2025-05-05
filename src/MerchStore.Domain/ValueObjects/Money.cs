@@ -62,7 +62,5 @@ public record Money
     }
 
     // Format as string with currency
-    // public override string ToString() => $"{Amount:F2} {Currency}";
-    // Format as string with invariant culture to avoid localization issues (e.g., decimal separator)
     public override string ToString() => $"{Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)} {Currency}";
 }
