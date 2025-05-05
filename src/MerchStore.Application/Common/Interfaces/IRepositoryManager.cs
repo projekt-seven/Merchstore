@@ -10,6 +10,11 @@ public interface IRepositoryManager
     IProductRepository ProductRepository { get; }
 
     /// <summary>
+    /// Gets the order repository.
+    /// </summary>
+    IOrderRepository OrderRepository { get; }
+
+    /// <summary>
     /// Gets the unit of work to commit transactions.
     /// </summary>
     IUnitOfWork UnitOfWork { get; }
