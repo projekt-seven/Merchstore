@@ -5,6 +5,8 @@ using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.Interfaces;
 using MerchStore.Infrastructure.Persistence;
 using MerchStore.Infrastructure.Persistence.Repositories;
+using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations;
+using MerchStore.Infrastructure.ExternalServices.Reviews;
 
 namespace MerchStore.Infrastructure;
 
@@ -22,25 +24,29 @@ public static class DependencyInjection
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // Call specific registration methods
+        services.AddPersistenceServices(configuration);
+        services.AddReviewServices(configuration);
+        // Add calls to other infrastructure registration methods here if needed (e.g., file storage, email service)
 
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        return services;
+    }
 
-        if (environment == "Development")
-        {
-            // Use SQLite for development
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
-        }
-        else
-        {
-            // Use Azure SQL Database for production
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-        }
+    /// <summary>
+    /// Registers services related to data persistence (EF Core, Repositories, UnitOfWork).
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Register DbContext with in-memory database
+        // In a real application, you'd use a real database
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseInMemoryDatabase("MerchStoreDb"));
 
         // Register repositories
         services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<IOrderRepository, OrderRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -53,6 +59,30 @@ public static class DependencyInjection
 
         // Register DbContext seeder
         services.AddScoped<AppDbContextSeeder>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers services related to the External Review API integration.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddReviewServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Register External Api options
+        services.Configure<ReviewApiOptions>(configuration.GetSection(ReviewApiOptions.SectionName));
+
+        // Register HttpClient for ReviewApiClient
+        services.AddHttpClient<ReviewApiClient>()
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5)); // Set a lifetime for the handler
+
+        // Register the mock service
+        services.AddSingleton<MockReviewService>();
+
+        // Register the repository with the circuit breaker
+        services.AddScoped<IReviewRepository, ExternalReviewRepository>();
 
         return services;
     }
