@@ -10,8 +10,7 @@ class Program
     {
         try
         {
-            // Use today's date to construct the Function App name
-            string today = DateTime.Now.ToString("yyMMdd");
+            // Ange det specifika namnet på din Azure Function-app
             string functionAppName = $"reviewapifunc250505";
             string functionKey = "campusmolndal";
 
