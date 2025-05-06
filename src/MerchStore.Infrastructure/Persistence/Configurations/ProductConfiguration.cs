@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MerchStore.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Text.Json;
 
 namespace MerchStore.Infrastructure.Persistence.Configurations;
 
@@ -58,5 +60,14 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         // Add an index on the Name for faster lookups
         builder.HasIndex(p => p.Name);
+
+        builder.Property(p => p.Tags)
+        .HasConversion(
+            new ValueConverter<List<string>, string>(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+            )
+        )
+        .HasColumnType("TEXT");
     }
 }

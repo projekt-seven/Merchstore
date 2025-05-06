@@ -54,4 +54,9 @@ public class BasicProductDto
     /// The category of the product
     /// </summary>
     public string Category { get; set; } = string.Empty;
+
+    /// <summary>
+    /// A list of tags associated with the product
+    /// </summary>
+    public List<string> Tags { get; set; } = new List<string>();
 }
