@@ -12,7 +12,7 @@ class Program
         {
             // Use today's date to construct the Function App name
             string today = DateTime.Now.ToString("yyMMdd");
-            string functionAppName = $"ReviewApiFunc{today}";
+            string functionAppName = $"reviewapifunc250505";
             string functionKey = "campusmolndal";
 
             // You can either use a random GUID or a specific product ID
