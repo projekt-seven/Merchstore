@@ -477,4 +477,77 @@ public class ProductTests
         Assert.True(result);
         Assert.Equal(0, product.StockQuantity);
     }
+
+    [Fact]
+    public void Constructor_WithValidTags_CreatesProduct()
+    {
+        // Arrange
+        string name = "Test Product";
+        string description = "Test Description";
+        var imageUrl = new Uri("https://example.com/image.jpg");
+        var price = new Money(19.99m, "USD");
+        int stockQuantity = 10;
+        string category = "Test Category";
+        var tags = new List<string> { "Tag1", "Tag2", "Tag3" };
+
+        // Act
+        var product = new Product(name, description, imageUrl, price, stockQuantity, category, tags);
+
+        // Assert
+        Assert.Equal(tags, product.Tags);
+    }
+
+    [Fact]
+    public void Constructor_WithNullTags_SetsEmptyTagsList()
+    {
+        // Arrange
+        string name = "Test Product";
+        string description = "Test Description";
+        var imageUrl = new Uri("https://example.com/image.jpg");
+        var price = new Money(19.99m, "USD");
+        int stockQuantity = 10;
+        string category = "Test Category";
+
+        // Act
+        var product = new Product(name, description, imageUrl, price, stockQuantity, category, null);
+
+        // Assert
+        Assert.NotNull(product.Tags);
+        Assert.Empty(product.Tags);
+    }
+
+    [Fact]
+    public void UpdateTags_WithValidTags_UpdatesTags()
+    {
+        // Arrange
+        var product = CreateValidProduct();
+        var newTags = new List<string> { "UpdatedTag1", "UpdatedTag2" };
+
+        // Act
+        product.UpdateTags(newTags);
+
+        // Assert
+        Assert.Equal(newTags, product.Tags);
+    }
+
+    [Fact]
+    public void UpdateTags_WithNullTags_ThrowsArgumentException()
+    {
+        // Arrange
+        var product = CreateValidProduct();
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => product.UpdateTags(null!));
+    }
+
+    [Fact]
+    public void UpdateTags_WithEmptyOrWhitespaceTags_ThrowsArgumentException()
+    {
+        // Arrange
+        var product = CreateValidProduct();
+        var invalidTags = new List<string> { "ValidTag", " " };
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => product.UpdateTags(invalidTags));
+    }
 }
