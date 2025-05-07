@@ -51,7 +51,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API for MerchStore product catalog"
     });
 
-    // Include XML comments if you've enabled XML documentation
+    // Include XML comments (if enabled in project settings)
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -59,7 +59,33 @@ builder.Services.AddSwaggerGen(options =>
         options.IncludeXmlComments(xmlPath);
     }
 
-    // Configure operation IDs for minimal APIs to avoid conflicts
+    // Add API key security definition
+    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Description = "API Key required to access endpoints. Use: X-API-Key: API_KEY",
+        In = ParameterLocation.Header,
+        Name = "X-API-Key",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme"
+    });
+
+    // Add requirement to use API key for all operations
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+
+    // Prevent duplicate operation IDs for minimal APIs
     options.CustomOperationIds(apiDesc =>
     {
         return apiDesc.ActionDescriptor?.DisplayName;
