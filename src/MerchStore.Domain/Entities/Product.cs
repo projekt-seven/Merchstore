@@ -1,5 +1,6 @@
 using MerchStore.Domain.Common;
 using MerchStore.Domain.ValueObjects;
+using System.Collections.Generic;
 
 namespace MerchStore.Domain.Entities;
 
@@ -11,13 +12,15 @@ public class Product : Entity<Guid>
     public int StockQuantity { get; private set; } = 0;
     public Uri? ImageUrl { get; private set; } = null;
     public string Category { get; private set; } = string.Empty;
+    public List<string> Tags { get; private set; } = new List<string>();
+    
 
     private Product()
     {
         // Required for EF Core, but we don't want it to be used directly
     }
 
-    public Product(string name, string description, Uri? imageUrl, Money price, int stockQuantity, string category)  : base(Guid.NewGuid())
+    public Product(string name, string description, Uri? imageUrl, Money price, int stockQuantity, string category, List<string>? tags = null) : base(Guid.NewGuid())
     {
         // Validate parameters
         if (string.IsNullOrWhiteSpace(name))
@@ -67,6 +70,7 @@ public class Product : Entity<Guid>
         Price = price;
         StockQuantity = stockQuantity;
         Category = category;
+        Tags = tags ?? new List<string>();
     }
 
     // Domain methods that encapsulate business logic
@@ -149,5 +153,13 @@ public class Product : Entity<Guid>
             throw new ArgumentException("Quantity must be positive", nameof(quantity));
 
         StockQuantity += quantity;
+    }
+
+    public void UpdateTags(List<string> tags)
+    {
+        if (tags == null || tags.Any(string.IsNullOrWhiteSpace))
+            throw new ArgumentException("Tags cannot contain null or empty values", nameof(tags));
+
+        Tags = tags;
     }
 }

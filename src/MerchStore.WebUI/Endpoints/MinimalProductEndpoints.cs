@@ -57,7 +57,8 @@ public static class MinimalProductEndpoints
                 Price = p.Price.Amount,
                 Currency = p.Price.Currency,
                 ImageUrl = p.ImageUrl?.ToString(),
-                StockQuantity = p.StockQuantity
+                StockQuantity = p.StockQuantity,
+                Tags = p.Tags
             }).ToList();
 
             return Results.Ok(response);

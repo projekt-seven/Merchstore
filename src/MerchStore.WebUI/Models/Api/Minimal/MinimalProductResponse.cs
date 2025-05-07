@@ -1,3 +1,5 @@
+using MerchStore.Application.Services.Interfaces;
+
 namespace MerchStore.WebUI.Models.Api.Minimal;
 
 /// <summary>
@@ -44,4 +46,25 @@ public class MinimalProductResponse
     /// Indicates whether the product is currently in stock.
     /// </summary>
     public bool InStock => StockQuantity > 0;
+
+    public string Category { get; set; } = string.Empty;
+    public List<string> Tags { get; set; } = new List<string>();
+
+    private static async Task<IResult> GetAllProducts(ICatalogService catalogService)
+    {
+        var products = await catalogService.GetAllProductsAsync();
+
+        var response = products.Select(p => new MinimalProductResponse
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            Price = p.Price.Amount,
+            StockQuantity = p.StockQuantity,
+            Category = p.Category,
+            Tags = p.Tags // Map the Tags property
+        }).ToList();
+
+        return Results.Ok(response);
+    }
 }

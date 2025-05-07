@@ -67,7 +67,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(249.00m),
                 60,
-                "t-shirts"),
+                "t-shirts",
+                new List<string> { "North Waddle", "t-shirt", "white", "cotton" }),
 
             new Product(
                 "Black Sweater",
@@ -75,7 +76,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(499.00m),
                 40,
-                "sweaters"),
+                "sweaters",
+                new List<string> { "North Waddle", "sweater", "black", "cotton" }),
 
             new Product(
                 "2025 Calendar",
@@ -83,7 +85,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(129.00m),
                 75,
-                "calendars"),
+                "calendars",
+                new List<string> { "North Waddle", "calendar", "2025", "penguin" }),
 
             new Product(
                 "Logo Coasters (Set of 4)",
@@ -91,7 +94,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(99.00m),
                 120,
-                "home"),
+                "home",
+                new List<string> { "North Waddle", "coasters", "white background", "penguin" }),
 
             new Product(
                 "White Tote Bag",
@@ -99,7 +103,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(149.00m),
                 90,
-                "bags"),
+                "bags",
+                new List<string> { "North Waddle", "tote bag", "white", "penguin" }),
 
             new Product(
                 "Water Bottle",
@@ -107,7 +112,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(199.00m),
                 70,
-                "bottles"),
+                "bottles",
+                new List<string> { "North Waddle", "water bottle", "white", "penguin" }),
 
             new Product(
                 "North Waddle Sticker Pack",
@@ -115,7 +121,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(59.00m),
                 150,
-                "stickers"),
+                "stickers",
+                new List<string> { "North Waddle", "stickers", "white", "penguin" }),
 
             new Product(
                 "North Waddle Notebook",
@@ -123,7 +130,8 @@ public class AppDbContextSeeder
                 new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
                 Money.FromSEK(119.00m),
                 80,
-                "stationery")
+                "stationery",
+                new List<string> { "North Waddle", "notebook", "practical", "penguin" })
         };
         
             await _context.Products.AddRangeAsync(products);
