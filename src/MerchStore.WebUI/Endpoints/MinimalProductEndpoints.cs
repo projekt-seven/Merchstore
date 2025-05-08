@@ -20,6 +20,9 @@ public static class MinimalProductEndpoints
             .WithTags("Minimal Products API")
             .WithOpenApi();
 
+        // Require API key authorization for all endpoints in this group
+        group.RequireAuthorization("ApiKeyPolicy");
+
         // Get all products endpoint
         group.MapGet("/", GetAllProducts)
             .WithName("GetAllProductsMinimal")

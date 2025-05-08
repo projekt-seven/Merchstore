@@ -488,3 +488,10 @@ $RECYCLE.BIN/
 *.db-shm
 *.db-wal
 *.db
+
+
+# Appsettings files
+# Ignore appsettings files with sensitive information
+src/MerchStore.WebUI/appsettings.json
+src/MerchStore.WebUI/appsettings.Development.json
+src/MerchStore.WebUI/appsettings.Production.json
