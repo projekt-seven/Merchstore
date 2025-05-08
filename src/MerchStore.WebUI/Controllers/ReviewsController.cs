@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Application.Services.Interfaces;
-
+using MerchStore.WebUI.Models;
 namespace MerchStore.WebUI.Controllers;
 
 public class ReviewsController : Controller

@@ -42,11 +42,14 @@ public static class DependencyInjection
     {
         // Register DbContext with in-memory database
         // In a real application, you'd use a real database
+        // Register DbContext with SQLite database
+        // In a real application, you'd use a real database connection string
         services.AddDbContext<AppDbContext>(options =>
-            options.sqlite(configuration.GetConnectionString("MerchStoreDb")));
+            options.UseSqlite("Data Source=MerchStoreDb.sqlite"));
 
         // Register repositories
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
