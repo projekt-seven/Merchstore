@@ -11,6 +11,10 @@ public record Customer
     public string City { get; private set; } = string.Empty;
     public string PostalCode { get; private set; } = string.Empty;
 
+    // 🔁 Koppling till User
+    public Guid? UserId { get; private set; } // null = gäst
+    public User? User { get; private set; }
+
     // Constructor for EF Core
     public Customer()
     {

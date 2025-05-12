@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MerchStore.Domain.Entities;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using MerchStore.Domain.Entities;
 using System.Text.Json;
 
 namespace MerchStore.Infrastructure.Persistence.Configurations;
@@ -26,32 +27,29 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         // Configure Name property
         builder.Property(p => p.Name)
-            .IsRequired() // NOT NULL constraint
-            .HasMaxLength(100); // VARCHAR(100)
+            .IsRequired()
+            .HasMaxLength(100);
 
         // Configure Description property
         builder.Property(p => p.Description)
-            .IsRequired() // NOT NULL constraint
-            .HasMaxLength(500); // VARCHAR(500)
+            .IsRequired()
+            .HasMaxLength(500);
 
         // Configure StockQuantity property
         builder.Property(p => p.StockQuantity)
-            .IsRequired(); // NOT NULL constraint
+            .IsRequired();
 
         // Configure ImageUrl property - it's nullable
         builder.Property(p => p.ImageUrl)
-            .IsRequired(false); // NULL allowed
+            .IsRequired(false);
 
         // Configure the owned entity Money as a complex type
-        // This maps the Money value object to columns in the Products table
         builder.OwnsOne(p => p.Price, priceBuilder =>
         {
-            // Map Amount property to a column named Price
             priceBuilder.Property(m => m.Amount)
                 .HasColumnName("Price")
                 .IsRequired();
 
-            // Map Currency property to a column named Currency
             priceBuilder.Property(m => m.Currency)
                 .HasColumnName("Currency")
                 .HasMaxLength(3)
@@ -61,13 +59,24 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         // Add an index on the Name for faster lookups
         builder.HasIndex(p => p.Name);
 
-        builder.Property(p => p.Tags)
-        .HasConversion(
-            new ValueConverter<List<string>, string>(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+        // Configure Tags property with value converter and value comparer
+        var tagsProperty = builder.Property(p => p.Tags);
+
+        tagsProperty
+            .HasConversion(
+                new ValueConverter<List<string>, string>(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+                )
             )
-        )
-        .HasColumnType("TEXT");
+            .HasColumnType("TEXT");
+
+        tagsProperty.Metadata.SetValueComparer(
+            new ValueComparer<List<string>>(
+                (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2),
+                c => c == null ? 0 : c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c == null ? new List<string>() : c.ToList()
+            )
+        );
     }
 }

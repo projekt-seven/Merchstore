@@ -23,5 +23,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.HashedPassword)
             .IsRequired();
+
+        builder.Property(u => u.Role)
+            .HasConversion<string>() // Spara som string i databasen
+            .IsRequired();
     }
 }

@@ -23,6 +23,11 @@ public class User : Entity<Guid>
     public string HashedPassword { get; private set; }
 
     /// <summary>
+    /// The user's role (e.g., User or Admin).
+    /// </summary>
+    public UserRole Role { get; private set; } = UserRole.User;
+
+    /// <summary>
     /// Required for EF Core.
     /// </summary>
     private User() {}
@@ -33,7 +38,8 @@ public class User : Entity<Guid>
     /// <param name="username">The chosen username.</param>
     /// <param name="email">The user's email address.</param>
     /// <param name="hashedPassword">The hashed password string.</param>
-    public User(string username, string email, string hashedPassword)
+    /// <param name="role">The role assigned to the user.</param>
+    public User(string username, string email, string hashedPassword, UserRole role = UserRole.User)
         : base(Guid.NewGuid())
     {
         ArgumentException.ThrowIfNullOrEmpty(username, nameof(username));
@@ -43,5 +49,15 @@ public class User : Entity<Guid>
         Username = username;
         Email = email;
         HashedPassword = hashedPassword;
+        Role = role;
     }
+}
+
+/// <summary>
+/// Defines the different roles a user can have.
+/// </summary>
+public enum UserRole
+{
+    User,
+    Admin
 }
