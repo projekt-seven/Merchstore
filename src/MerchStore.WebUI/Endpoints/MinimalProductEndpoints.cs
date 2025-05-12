@@ -27,14 +27,16 @@ public static class MinimalProductEndpoints
         group.MapGet("/", GetAllProducts)
             .WithName("GetAllProductsMinimal")
             .WithDescription("Gets all available products")
-            .Produces<List<MinimalProductResponse>>(StatusCodes.Status200OK);
+            .Produces<List<MinimalProductResponse>>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .Produces(StatusCodes.Status404NotFound);
 
         // Get product by ID endpoint
         group.MapGet("/{id}", GetProductById)
             .WithName("GetProductByIdMinimal")
             .WithDescription("Gets a specific product by its unique identifier")
             .Produces<MinimalProductResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status500InternalServerError);
+            .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status404NotFound);
 
         return app;
