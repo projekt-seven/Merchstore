@@ -44,8 +44,20 @@ public static class DependencyInjection
         // In a real application, you'd use a real database
         // Register DbContext with SQLite database
         // In a real application, you'd use a real database connection string
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite("Data Source=MerchStoreDb.sqlite"));
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+        if (environment == "Development")
+        {
+            // Use SQLite for development
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+        }
+        else
+        {
+            // Use Azure SQL Database for production
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        }
 
         // Register repositories
         services.AddScoped<IProductRepository, ProductRepository>();

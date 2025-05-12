@@ -117,3 +117,4 @@ app.MapControllerRoute(
 app.MapMinimalProductEndpoints();
 
 app.Run();
+
