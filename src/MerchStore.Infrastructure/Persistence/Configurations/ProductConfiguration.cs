@@ -27,29 +27,31 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         // Configure Name property
         builder.Property(p => p.Name)
-            .IsRequired()
-            .HasMaxLength(100);
+            .IsRequired() // NOT NULL constraint
+            .HasMaxLength(100); // VARCHAR(100)
 
         // Configure Description property
         builder.Property(p => p.Description)
-            .IsRequired()
-            .HasMaxLength(500);
+            .IsRequired() // NOT NULL constraint
+            .HasMaxLength(500); // VARCHAR(500)
 
         // Configure StockQuantity property
         builder.Property(p => p.StockQuantity)
-            .IsRequired();
+            .IsRequired(); // NOT NULL constraint
 
         // Configure ImageUrl property - it's nullable
         builder.Property(p => p.ImageUrl)
-            .IsRequired(false);
+            .IsRequired(false); // NULL allowed
 
         // Configure the owned entity Money as a complex type
         builder.OwnsOne(p => p.Price, priceBuilder =>
         {
+            // Map Amount property to a column named Price
             priceBuilder.Property(m => m.Amount)
                 .HasColumnName("Price")
                 .IsRequired();
 
+            // Map Currency property to a column named Currency
             priceBuilder.Property(m => m.Currency)
                 .HasColumnName("Currency")
                 .HasMaxLength(3)
