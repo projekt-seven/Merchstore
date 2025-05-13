@@ -224,14 +224,15 @@ public class AppDbContextSeeder
     {
         if (!await _context.Users.AnyAsync())
         {
-            var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME") ?? "admin";
-            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? "default_password";
-            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@example.com";
+            var adminUsername = _configuration["AdminUser:Username"] ?? "admin";
+            var adminPassword = _configuration["AdminUser:Password"] ?? "default_password";
+            var adminEmail = _configuration["AdminUser:Email"] ?? "admin@example.com";
+            var adminRole = _configuration["AdminUser:AdminRole"] ?? "Administrator";
 
             // Hash the password before storing it
             var hashedPassword = HashPassword(adminPassword);
 
-            _context.Users.Add(new User(adminUsername, hashedPassword, adminEmail, "Admin"));
+            _context.Users.Add(new User(adminUsername, hashedPassword, adminEmail, adminRole));
             await _context.SaveChangesAsync();
         }
     }

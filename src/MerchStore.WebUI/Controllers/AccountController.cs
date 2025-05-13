@@ -33,8 +33,14 @@ public class AccountController : Controller
 
         var user = await _userRepository.GetByUsernameAsync(model.Username);
 
-        if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) // Use hashed password verification
+        if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
         {
+            if (!UserRoles.AllRoles.Contains(user.Role))
+            {
+                ModelState.AddModelError(string.Empty, "Invalid role assigned to the user.");
+                return View(model);
+            }
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Username),
@@ -45,7 +51,7 @@ public class AccountController : Controller
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Dashboard", "Admin");
         }
 
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
