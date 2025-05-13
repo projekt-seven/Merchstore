@@ -19,6 +19,8 @@ public class AppDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<Customer> Customers { get; set; } // Add DbSet for Customer
 
+    public DbSet<User> Users { get; set; } = null!;
+
     /// <summary>
     /// Constructor that accepts DbContextOptions, which allows for configuration to be passed in.
     /// This enables different database providers (SQL Server, In-Memory, etc.) to be used with the same context.
@@ -61,5 +63,16 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<OrderItem>()
             .Property(oi => oi.UnitPrice)
             .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("Users");
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
+            entity.Property(u => u.Password).IsRequired();
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
+            entity.Property(u => u.Role).IsRequired().HasMaxLength(20);
+            entity.Property(u => u.CreatedAt).IsRequired();
+        });
     }
 }

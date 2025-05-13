@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.ValueObjects;
 
@@ -13,16 +14,18 @@ public class AppDbContextSeeder
 {
     private readonly ILogger<AppDbContextSeeder> _logger;
     private readonly AppDbContext _context;
+    private readonly IConfiguration _configuration;
 
     /// <summary>
     /// Constructor that accepts the context and a logger
     /// </summary>
     /// <param name="context">The database context to seed</param>
     /// <param name="logger">The logger for logging seed operations</param>
-    public AppDbContextSeeder(AppDbContext context, ILogger<AppDbContextSeeder> logger)
+    public AppDbContextSeeder(AppDbContext context, ILogger<AppDbContextSeeder> logger, IConfiguration configuration)
     {
         _context = context;
         _logger = logger;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -41,6 +44,8 @@ public class AppDbContextSeeder
 
             // Seed orders if none exist
             await SeedOrdersAsync();
+
+            await SeedUsersAsync();
         }
         catch (Exception ex)
         {
@@ -213,5 +218,27 @@ public class AppDbContextSeeder
         {
             _logger.LogInformation("Database already contains orders. Skipping order seed.");
         }
+    }
+
+    private async Task SeedUsersAsync()
+    {
+        if (!await _context.Users.AnyAsync())
+        {
+            var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME") ?? "admin";
+            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? "default_password";
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@example.com";
+
+            // Hash the password before storing it
+            var hashedPassword = HashPassword(adminPassword);
+
+            _context.Users.Add(new User(adminUsername, hashedPassword, adminEmail, "Admin"));
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private string HashPassword(string password)
+    {
+        // Use a secure hashing algorithm like BCrypt or PBKDF2
+        return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }
