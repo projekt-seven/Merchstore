@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace MerchStore.Infrastructure.Persistence.Migrations
+namespace MerchStore.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -120,7 +120,7 @@ namespace MerchStore.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
+                        .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
@@ -128,7 +128,7 @@ namespace MerchStore.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("StockQuantity")
@@ -142,7 +142,7 @@ namespace MerchStore.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("MerchStore.Domain.Entities.Order", b =>
@@ -177,12 +177,6 @@ namespace MerchStore.Infrastructure.Persistence.Migrations
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("TEXT")
                                 .HasColumnName("Price");
-
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasMaxLength(3)
-                                .HasColumnType("TEXT")
-                                .HasColumnName("Currency");
 
                             b1.HasKey("ProductId");
 
