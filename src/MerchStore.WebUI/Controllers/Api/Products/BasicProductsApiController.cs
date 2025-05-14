@@ -32,6 +32,8 @@ public class BasicProductsApiController : ControllerBase
     /// <response code="200">Returns the list of products</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<BasicProductDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
         try
@@ -75,6 +77,7 @@ public class BasicProductsApiController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById(Guid id)
     {
         try

@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.ValueObjects;
+using System.Text.Json;
 
 namespace MerchStore.Infrastructure.Persistence;
 
@@ -12,54 +14,77 @@ namespace MerchStore.Infrastructure.Persistence;
 public class AppDbContext : DbContext
 {
     /// <summary>
-    /// DbSet represents a collection of entities of a specific type in the database.
-    /// Each DbSet typically corresponds to a database table.
+    /// DbSet representing the Products table.
     /// </summary>
     public DbSet<Product> Products { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<Customer> Customers { get; set; } // Add DbSet for Customer
 
     /// <summary>
-    /// Constructor that accepts DbContextOptions, which allows for configuration to be passed in.
-    /// This enables different database providers (SQL Server, In-Memory, etc.) to be used with the same context.
+    /// DbSet representing the Orders table.
     /// </summary>
-    /// <param name="options">The options to be used by the DbContext</param>
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
+    public DbSet<Order> Orders { get; set; }
+
+    /// <summary>
+    /// DbSet representing the Customers table.
+    /// </summary>
+    public DbSet<Customer> Customers { get; set; }
+
+    /// <summary>
+    /// Constructor that accepts DbContextOptions to configure the context.
+    /// </summary>
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     /// <summary>
     /// This method is called when the model for a derived context is being created.
-    /// It allows for configuration of entities, relationships, and other model-building activities.
+    /// It allows for configuration of entities, relationships, and conversions.
     /// </summary>
-    /// <param name="modelBuilder">Provides a simple API for configuring the model</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Apply entity configurations from the current assembly
+        // Apply all IEntityTypeConfiguration implementations from the current assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-        // Configure a value converter for the Money type
+        // ValueConverter for the Money value object
+        // Converts Money to decimal for database storage and back to Money when reading
         var moneyConverter = new ValueConverter<Money, decimal>(
-            v => v.Amount, // Convert Money to decimal for storage
-            v => Money.FromSEK(v) // Convert decimal back to Money when reading
+            v => v.Amount,
+            v => Money.FromSEK(v)
         );
 
-        // Configure Order entity
+        // Configure relationship: Order requires a Customer
         modelBuilder.Entity<Order>()
             .HasOne(o => o.Customer)
             .WithMany()
             .HasForeignKey("CustomerId")
-            .IsRequired(); // Ensure Customer is required
+            .IsRequired();
 
+        // Apply the Money converter to the TotalPrice property on Order
         modelBuilder.Entity<Order>()
             .Property(o => o.TotalPrice)
             .HasConversion(moneyConverter);
 
-        // Configure OrderItem entity
+        // Apply the Money converter to the UnitPrice property on OrderItem
         modelBuilder.Entity<OrderItem>()
             .Property(oi => oi.UnitPrice)
             .HasConversion(moneyConverter);
+
+        // ValueConverter for serializing/deserializing Product.Tags as JSON
+        var tagsConverter = new ValueConverter<List<string>, string>(
+            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null!) ?? new()
+        );
+
+        // ValueComparer to compare List<string> values for Product.Tags
+        var tagsComparer = new ValueComparer<List<string>>(
+            (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2), // Equality check
+            c => c == null ? 0 : c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // Hash code
+            c => c == null ? new List<string>() : c.ToList() // Snapshot copy
+        );
+
+        // Apply both converter and comparer to Product.Tags
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Tags)
+            .HasConversion(tagsConverter)
+            .Metadata.SetValueComparer(tagsComparer);
     }
-}
+} 
