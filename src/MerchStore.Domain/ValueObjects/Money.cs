@@ -22,6 +22,8 @@ public record Money
         Currency = currency.ToUpper(); // Standardize to uppercase
     }
 
+    private Money() { }
+
     // Create SEK currency shorthand using the Static Factory Method design pattern
     public static Money FromSEK(decimal amount) => new Money(amount, "SEK");
 

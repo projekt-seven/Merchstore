@@ -19,24 +19,25 @@ public static class MinimalProductEndpoints
         var group = app.MapGroup("/api/minimal/products")
             .WithTags("Minimal Products API")
             .WithOpenApi();
-
+        
         // Require API key authorization for all endpoints in this group
         group.RequireAuthorization("ApiKeyPolicy");
-        
+
         // Get all products endpoint
         group.MapGet("/", GetAllProducts)
             .WithName("GetAllProductsMinimal")
             .WithDescription("Gets all available products")
             .Produces<List<MinimalProductResponse>>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status500InternalServerError);
+            .Produces(StatusCodes.Status500InternalServerError)
+            .Produces(StatusCodes.Status404NotFound);
 
         // Get product by ID endpoint
         group.MapGet("/{id}", GetProductById)
             .WithName("GetProductByIdMinimal")
             .WithDescription("Gets a specific product by its unique identifier")
             .Produces<MinimalProductResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status500InternalServerError);
+            .Produces(StatusCodes.Status500InternalServerError)
+            .Produces(StatusCodes.Status404NotFound);
 
         return app;
     }
@@ -69,6 +70,7 @@ public static class MinimalProductEndpoints
         catch (Exception ex)
         {
             // Log the exception in a real application
+            Console.WriteLine("❌ FEL i GetAllProducts: " + ex.Message);
             return Results.Problem($"An error occurred while retrieving products: {ex.Message}");
         }
     }
@@ -98,14 +100,16 @@ public static class MinimalProductEndpoints
                 Price = product.Price.Amount,
                 Currency = product.Price.Currency,
                 ImageUrl = product.ImageUrl?.ToString(),
-                StockQuantity = product.StockQuantity
+                StockQuantity = product.StockQuantity,
+                Tags = product.Tags
             };
 
             return Results.Ok(response);
         }
         catch (Exception ex)
-        {
+        {   
             // Log the exception in a real application
+            Console.WriteLine("❌ FEL i GetProductById: " + ex.Message);
             return Results.Problem($"An error occurred while retrieving the product: {ex.Message}");
         }
     }
