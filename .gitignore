@@ -482,3 +482,11 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+# SLQite temporary files
+*.db-shm
+*.db-wal
+*.db
+
+src/MerchStore.WebUI/appsettings.Development.json
