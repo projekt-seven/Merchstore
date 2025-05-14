@@ -224,10 +224,10 @@ public class AppDbContextSeeder
     {
         if (!await _context.Users.AnyAsync())
         {
-            var adminUsername = _configuration["AdminUser:Username"] ?? "admin";
-            var adminPassword = _configuration["AdminUser:Password"] ?? "default_password";
-            var adminEmail = _configuration["AdminUser:Email"] ?? "admin@example.com";
-            var adminRole = _configuration["AdminUser:AdminRole"] ?? "Administrator";
+            var adminUsername = _configuration["AdminUser:Username"];
+            var adminPassword = _configuration["AdminUser:Password"];
+            var adminEmail = _configuration["AdminUser:Email"];
+            var adminRole = _configuration["AdminUser:AdminRole"];
 
             // Hash the password before storing it
             var hashedPassword = HashPassword(adminPassword);
