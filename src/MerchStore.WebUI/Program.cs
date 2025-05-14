@@ -1,14 +1,16 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
+using MerchStore.Models;
 using MerchStore.WebUI.Authentication.ApiKey;
-using Microsoft.OpenApi.Models;
-using MerchStore.WebUI.Infrastructure;
-using System.Text.Json.Serialization;
 using MerchStore.WebUI.Endpoints;
+using MerchStore.WebUI.Infrastructure;
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,12 +25,39 @@ builder.Services.AddControllersWithViews()
     });
 
 // Add API Key authentication
-builder.Services.AddAuthentication()
-   .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options =>
+    {
+        // Cookie settings
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.Name = "MerchStore.Auth";
+
+        // Expiration settings
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.SlidingExpiration = true;
+
+        // Authentication paths
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    })
+    .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
 
 // Add API Key authorization
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole(UserRoles.Administrator));
+
+    options.AddPolicy("AdminOrCustomer", policy =>
+        policy.RequireRole(UserRoles.Administrator, UserRoles.Customer));
+
     options.AddPolicy("ApiKeyPolicy", policy =>
         policy.AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
               .RequireAuthenticatedUser());

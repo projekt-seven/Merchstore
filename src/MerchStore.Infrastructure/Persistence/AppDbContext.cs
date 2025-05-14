@@ -23,6 +23,8 @@ public class AppDbContext : DbContext
     /// </summary>
     public DbSet<Order> Orders { get; set; }
 
+    public DbSet<User> Users { get; set; } = null!;
+
     /// <summary>
     /// DbSet representing the Customers table.
     /// </summary>
@@ -68,6 +70,17 @@ public class AppDbContext : DbContext
             .Property(oi => oi.UnitPrice)
             .HasConversion(moneyConverter);
 
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("Users");
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
+            entity.Property(u => u.Password).IsRequired();
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
+            entity.Property(u => u.Role).IsRequired().HasMaxLength(20);
+            entity.Property(u => u.CreatedAt).IsRequired();
+        });
+        
         // ValueConverter for serializing/deserializing Product.Tags as JSON
         var tagsConverter = new ValueConverter<List<string>, string>(
             v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
