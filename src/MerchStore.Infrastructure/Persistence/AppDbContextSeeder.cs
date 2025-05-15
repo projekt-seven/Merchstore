@@ -229,7 +229,18 @@ public class AppDbContextSeeder
             var adminEmail = _configuration["AdminUser:Email"];
             var adminRole = _configuration["AdminUser:AdminRole"];
 
-            // Hash the password before storing it
+
+            if (string.IsNullOrWhiteSpace(adminUsername) ||
+                string.IsNullOrWhiteSpace(adminPassword) ||
+                string.IsNullOrWhiteSpace(adminEmail) ||
+                string.IsNullOrWhiteSpace(adminRole))
+            {
+                _logger.LogError("One or more required environment variables for admin user are missing.");
+                throw new InvalidOperationException("Missing required environment variables for admin user.");
+            }
+
+            _logger.LogInformation("Seeding admin user...");
+
             var hashedPassword = HashPassword(adminPassword);
 
             _context.Users.Add(new User(adminUsername, hashedPassword, adminEmail, adminRole));
