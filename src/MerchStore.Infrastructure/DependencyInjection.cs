@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using MerchStore.Application.Common.Interfaces;
 using MerchStore.Application.Services;
 using MerchStore.Application.Services.Interfaces;
+using MerchStore.Application.Services.Implementations; 
 using MerchStore.Domain.Interfaces;
 using MerchStore.Infrastructure.Persistence;
 using MerchStore.Infrastructure.Persistence.Repositories;
@@ -24,10 +25,16 @@ public static class DependencyInjection
         return services;
     }
 
-    //  Lägg till den här metoden i samma fil om du vill
     public static IServiceCollection AddReviewServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Exempel: services.AddScoped<IReviewService, ReviewService>();
+        services.Configure<ReviewApiConfiguration>(
+            configuration.GetSection("ReviewApi")); // Läser från appsettings.Development.json
+
+        services.AddHttpClient<ReviewApiClient>(); // Registrerar HttpClient-baserad service
+
+        services.AddScoped<IReviewRepository, ExternalReviewRepository>();
+        services.AddScoped<IReviewService, ReviewService>();
+
         return services;
     }
 
@@ -69,6 +76,8 @@ public static class DependencyInjection
         services.AddLogging();
         services.AddScoped<AppDbContextSeeder>();
         services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<IReviewRepository, ExternalReviewRepository>();
+        services.AddScoped<MockReviewService>();
 
         return services;
     }
