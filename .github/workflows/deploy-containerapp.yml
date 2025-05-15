@@ -25,6 +25,10 @@ jobs:
           docker build -f src/dockerfile -t ${{ secrets.DOCKER_USERNAME }}/merchstore:latest ./src
           docker push ${{ secrets.DOCKER_USERNAME }}/merchstore:latest
 
+      - name: Install Azure CLI (Ensure Latest Version)
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
       - name: Log in to Azure
         uses: azure/login@v1
         with:
@@ -37,9 +41,9 @@ jobs:
             --resource-group NorthWaddleRG \
             --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest \
             --set-env-vars \
-              "CONNECTION_STRING=${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }}" \
-              "API_KEY=${{ secrets.BASIC_PRODUCT_API_KEY }}" \
-              "ADMIN_USERNAME=${{ secrets.ADMIN_USER_USERNAME }}" \
-              "ADMIN_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}" \
-              "ADMIN_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}" \
-              "ADMIN_ROLE=${{ secrets.ADMIN_USER_ROLE }}"
+              CONNECTION_STRING=${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }} \
+              API_KEY=${{ secrets.BASIC_PRODUCT_API_KEY }} \
+              ADMIN_USERNAME=${{ secrets.ADMIN_USER_USERNAME }} \
+              ADMIN_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }} \
+              ADMIN_EMAIL=${{ secrets.ADMIN_USER_EMAIL }} \
+              ADMIN_ROLE=${{ secrets.ADMIN_USER_ROLE }}
