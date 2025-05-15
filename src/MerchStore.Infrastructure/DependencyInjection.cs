@@ -27,7 +27,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddReviewServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<ReviewApiConfiguration>(
+        services.Configure<ReviewApiOptions>(
             configuration.GetSection("ReviewApi")); // Läser från appsettings.Development.json
 
         services.AddHttpClient<ReviewApiClient>(); // Registrerar HttpClient-baserad service
