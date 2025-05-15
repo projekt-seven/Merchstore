@@ -488,5 +488,3 @@ $RECYCLE.BIN/
 *.db-shm
 *.db-wal
 *.db
-
-src/MerchStore.WebUI/appsettings.Development.json
