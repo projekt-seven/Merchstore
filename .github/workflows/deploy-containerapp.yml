@@ -39,7 +39,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          az containerapp env-var set \
+          az containerapp env set \
             --name northwaddleapp \
             --resource-group NorthWaddleRG \
             --env-vars \
