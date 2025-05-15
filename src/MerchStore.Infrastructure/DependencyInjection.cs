@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.Interfaces;
 using MerchStore.Infrastructure.Persistence;
@@ -17,46 +19,47 @@ namespace MerchStore.Infrastructure;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Adds Infrastructure layer services to the DI container
+    /// Registers all infrastructure-related services including the database.
     /// </summary>
-    /// <param name="services">The service collection to add services to</param>
-    /// <param name="configuration">The configuration for database connection strings</param>
-    /// <returns>The service collection for chaining</returns>
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The application's configuration.</param>
+    /// <param name="env">Hosting environment (to detect Development or Production).</param>
+    /// <returns>The modified service collection for chaining.</returns>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
-        // Call specific registration methods
-        services.AddPersistenceServices(configuration);
-        services.AddReviewServices(configuration);
-        // Add calls to other infrastructure registration methods here if needed (e.g., file storage, email service)
+        // Register database services depending on environment
+        services.AddPersistenceServices(configuration, env.IsDevelopment());
+
+        // Register additional infrastructure services here if needed (e.g. email, blob storage)
+        services.AddReviewServices(configuration); // Optional - only if implemented
 
         return services;
     }
 
     /// <summary>
-    /// Registers services related to data persistence (EF Core, Repositories, UnitOfWork).
+    /// Registers persistence-related services: DbContext, Repositories, UnitOfWork, etc.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The application configuration.</param>
-    /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
+    /// <param name="isDevelopment">Flag indicating whether the app is running in Development.</param>
+    /// <returns>The modified service collection for chaining.</returns>
+    public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
-        // Register DbContext with in-memory database
-        // In a real application, you'd use a real database
-        // Register DbContext with SQLite database
-        // In a real application, you'd use a real database connection string
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-        if (environment == "Development")
+        if (isDevelopment)
         {
-            // Use SQLite for development
+            // Use SQLite locally in development
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
         }
         else
         {
-            // Use Azure SQL Database for production
+            // Use Azure SQL or other production DB, from environment variable or fallback to config
+            var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION") 
+                                ?? configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(connectionString,
+                    sqlOptions => sqlOptions.EnableRetryOnFailure()));
         }
 
         // Register repositories
@@ -64,16 +67,14 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
-        // Register Unit of Work
+        // Register Unit of Work and repository manager
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-        // Register Repository Manager
         services.AddScoped<IRepositoryManager, RepositoryManager>();
 
-        // Add logging services if not already added
+        // Register logger
         services.AddLogging();
 
-        // Register DbContext seeder
+        // Register seeder for test/admin data
         services.AddScoped<AppDbContextSeeder>();
 
         return services;

@@ -67,7 +67,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddApplication();
 
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
