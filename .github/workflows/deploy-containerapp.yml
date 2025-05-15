@@ -1,9 +1,10 @@
 name: Deploy to Azure Container App
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build-and-deploy:
@@ -29,9 +30,22 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Container App
+      - name: Update container image
         run: |
           az containerapp update \
             --name northwaddleapp \
             --resource-group NorthWaddleRG \
             --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest
+
+      - name: Set environment variables
+        run: |
+          az containerapp env-var set \
+            --name northwaddleapp \
+            --resource-group NorthWaddleRG \
+            --env-vars \
+              CONNECTION_STRING=${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }} \
+              API_KEY=${{ secrets.BASIC_PRODUCT_API_KEY }} \
+              ADMIN_USERNAME=${{ secrets.ADMIN_USER_USERNAME }} \
+              ADMIN_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }} \
+              ADMIN_EMAIL=${{ secrets.ADMIN_USER_EMAIL }} \
+              ADMIN_ROLE=${{ secrets.ADMIN_USER_ROLE }}
