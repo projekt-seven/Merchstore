@@ -41,9 +41,9 @@ jobs:
             --resource-group NorthWaddleRG \
             --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest \
             --set-env-vars \
-              CONNECTION_STRING=${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }} \
-              API_KEY=${{ secrets.BASIC_PRODUCT_API_KEY }} \
-              ADMIN_USERNAME=${{ secrets.ADMIN_USER_USERNAME }} \
-              ADMIN_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }} \
-              ADMIN_EMAIL=${{ secrets.ADMIN_USER_EMAIL }} \
-              ADMIN_ROLE=${{ secrets.ADMIN_USER_ROLE }}
+              CONNECTION_STRING="${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }}" \
+              API_KEY="${{ secrets.BASIC_PRODUCT_API_KEY }}" \
+              ADMIN_USERNAME="${{ secrets.ADMIN_USER_USERNAME }}" \
+              ADMIN_PASSWORD="${{ secrets.ADMIN_USER_PASSWORD }}" \
+              ADMIN_EMAIL="${{ secrets.ADMIN_USER_EMAIL }}" \
+              ADMIN_ROLE="${{ secrets.ADMIN_USER_ROLE }}"
