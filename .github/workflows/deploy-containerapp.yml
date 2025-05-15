@@ -30,18 +30,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Update container image
+      - name: Update container image and set environment variables
         run: |
           az containerapp update \
             --name northwaddleapp \
             --resource-group NorthWaddleRG \
-            --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest
-
-      - name: Set environment variables
-        run: |
-          az containerapp env set \
-            --name northwaddleapp \
-            --resource-group NorthWaddleRG \
+            --image ${{ secrets.DOCKER_USERNAME }}/merchstore:latest \
             --set-env-vars \
               CONNECTION_STRING=${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }} \
               API_KEY=${{ secrets.BASIC_PRODUCT_API_KEY }} \
