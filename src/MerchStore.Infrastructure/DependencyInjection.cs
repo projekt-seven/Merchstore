@@ -24,7 +24,7 @@ public static class DependencyInjection
         return services;
     }
 
-    // 🧩 Lägg till den här metoden i samma fil om du vill
+    //  Lägg till den här metoden i samma fil om du vill
     public static IServiceCollection AddReviewServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Exempel: services.AddScoped<IReviewService, ReviewService>();
@@ -35,22 +35,27 @@ public static class DependencyInjection
     {
         var envConnectionString = Environment.GetEnvironmentVariable("AZURE_SQL_DB_CONNECTIONSTRING");
 
+        //  Logga vilken connection string som används – men visa inte hela lösenordet
         if (!string.IsNullOrWhiteSpace(envConnectionString))
         {
+            Console.WriteLine($"[DEBUG] Using ENV connection string: {envConnectionString.Substring(0, Math.Min(envConnectionString.Length, 60))}...");
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(envConnectionString,
                     sqlOptions => sqlOptions.EnableRetryOnFailure()));
         }
         else if (isDevelopment)
         {
+            var devConnection = configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine($"[DEBUG] Using SQLite dev connection: {devConnection}");
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(devConnection));
         }
         else
         {
             var fallbackConnection = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("No valid connection string found for production.");
 
+            Console.WriteLine($"[DEBUG] Using fallback connection string: {fallbackConnection.Substring(0, Math.Min(fallbackConnection.Length, 60))}...");
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(fallbackConnection,
                     sqlOptions => sqlOptions.EnableRetryOnFailure()));
@@ -67,6 +72,7 @@ public static class DependencyInjection
 
         return services;
     }
+
     public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
