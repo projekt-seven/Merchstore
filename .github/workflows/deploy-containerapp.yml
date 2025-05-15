@@ -42,7 +42,7 @@ jobs:
           az containerapp env set \
             --name northwaddleapp \
             --resource-group NorthWaddleRG \
-            --env-vars \
+            --set-env-vars \
               CONNECTION_STRING=${{ secrets.AZURE_SQL_DB_CONNECTIONSTRING }} \
               API_KEY=${{ secrets.BASIC_PRODUCT_API_KEY }} \
               ADMIN_USERNAME=${{ secrets.ADMIN_USER_USERNAME }} \
