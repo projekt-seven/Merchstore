@@ -4,11 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using MerchStore.Application.Common.Interfaces;
+using MerchStore.Application.Services;
+using MerchStore.Application.Services.Interfaces;
 using MerchStore.Domain.Interfaces;
 using MerchStore.Infrastructure.Persistence;
 using MerchStore.Infrastructure.Persistence.Repositories;
 using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations;
 using MerchStore.Infrastructure.ExternalServices.Reviews;
+
 
 namespace MerchStore.Infrastructure;
 
@@ -60,6 +63,7 @@ public static class DependencyInjection
         services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddLogging();
         services.AddScoped<AppDbContextSeeder>();
+        services.AddScoped<ICatalogService, CatalogService>();
 
         return services;
     }

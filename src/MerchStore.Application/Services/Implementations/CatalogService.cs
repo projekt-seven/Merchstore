@@ -2,7 +2,7 @@ using MerchStore.Application.Services.Interfaces;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Interfaces;
 
-namespace MerchStore.Application.Services.Implementations;
+namespace MerchStore.Application.Services;
 
 /// <summary>
 /// Implementation of the catalog service.
