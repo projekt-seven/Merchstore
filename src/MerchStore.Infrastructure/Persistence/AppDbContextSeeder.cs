@@ -224,11 +224,18 @@ public class AppDbContextSeeder
     {
         if (!await _context.Users.AnyAsync())
         {
+            //För dev
+            /*
             var adminUsername = _configuration["AdminUser:Username"];
             var adminPassword = _configuration["AdminUser:Password"];
             var adminEmail = _configuration["AdminUser:Email"];
-            var adminRole = _configuration["AdminUser:AdminRole"];
+            var adminRole = _configuration["AdminUser:AdminRole"];*/
 
+            //För prod
+            var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME");
+            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+            var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE");
 
             if (string.IsNullOrWhiteSpace(adminUsername) ||
                 string.IsNullOrWhiteSpace(adminPassword) ||
