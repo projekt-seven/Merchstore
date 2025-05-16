@@ -24,30 +24,34 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// Add API Key authentication
-builder.Services.AddAuthentication(options =>
+    var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY") 
+                    ?? builder.Configuration["ApiKey:Value"];
+
+    if (string.IsNullOrWhiteSpace(apiKeyValue))
+    {
+        throw new InvalidOperationException("API key must be provided via environment variable or appsettings.");
+    }
+
+    builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddCookie(options =>
     {
-        // Cookie settings
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.Name = "MerchStore.Auth";
 
-        // Expiration settings
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
         options.SlidingExpiration = true;
 
-        // Authentication paths
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
     })
-    .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
+    .AddApiKey(apiKeyValue);
 
 // Add API Key authorization
 builder.Services.AddAuthorization(options =>
