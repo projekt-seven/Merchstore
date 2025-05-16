@@ -146,14 +146,14 @@ else
 {
     // In development, seed the database with test data using the extension method
     app.Services.SeedDatabaseAsync().Wait();
-
-    // Enable Swagger UI in development
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-    });
 }
+
+// Enable Swagger UI in development
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
