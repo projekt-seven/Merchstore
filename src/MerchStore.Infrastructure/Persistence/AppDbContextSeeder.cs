@@ -232,10 +232,11 @@ public class AppDbContextSeeder
             var adminRole = _configuration["AdminUser:AdminRole"];*/
 
             //För prod
-            var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME");
-            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
-            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
-            var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE");
+            var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME") ?? _configuration["AdminUser:Username"];
+            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? _configuration["AdminUser:Password"];
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? _configuration["AdminUser:Email"];
+            var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE") ?? _configuration["AdminUser:AdminRole"];
+
 
             if (string.IsNullOrWhiteSpace(adminUsername) ||
                 string.IsNullOrWhiteSpace(adminPassword) ||

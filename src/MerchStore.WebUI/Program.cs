@@ -136,24 +136,31 @@ var app = builder.Build();
 builder.Logging.AddConsole();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+
+// Seed databasen endast i Development
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-else
-{
-    // In development, seed the database with test data using the extension method
     app.Services.SeedDatabaseAsync().Wait();
 }
 
-// Enable Swagger UI in development
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+// Konfigurera felhantering och HSTS i Production
+if (app.Environment.IsProduction())
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-});
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+// Aktivera Swagger i både Development och Production
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+    });
+}
+
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
