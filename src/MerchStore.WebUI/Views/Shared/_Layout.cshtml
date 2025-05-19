@@ -31,18 +31,18 @@
                     <!-- Navbar links in the center -->
                     <ul class="navbar-nav mx-auto gap-4">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">STORE</a>
+                            <a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">STORE</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">PRIVACY</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">PRIVACY</a>
                         </li>
                         @if (User.IsInRole(MerchStore.Models.UserRoles.Administrator))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Dashboard">DASHBOARD</a>
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Dashboard">DASHBOARD</a>
                             </li>
                         }
                         <li class="nav-item">

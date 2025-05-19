@@ -56,7 +56,12 @@ button.accept-policy {
 }
 
 .nav-item {
+  font-weight: 500;
+  color: #3e3e3e !important;
   border-bottom: #f8f8f8 8px solid;
+}
+.nav-link {
+  color: #c41f1f !important;
 }
 
 .nav-item:hover {
