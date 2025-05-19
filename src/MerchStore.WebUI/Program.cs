@@ -1,4 +1,5 @@
 using System.Reflection;
+using MediatR;
 using System.Text.Json.Serialization;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMediatR(typeof(MerchStore.Application.AssemblyReference).Assembly);
 // Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
@@ -24,34 +26,34 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-    var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY") 
-                    ?? builder.Configuration["ApiKey:Value"];
+var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY")
+                ?? builder.Configuration["ApiKey:Value"];
 
-    if (string.IsNullOrWhiteSpace(apiKeyValue))
-    {
-        throw new InvalidOperationException("API key must be provided via environment variable or appsettings.");
-    }
+if (string.IsNullOrWhiteSpace(apiKeyValue))
+{
+    throw new InvalidOperationException("API key must be provided via environment variable or appsettings.");
+}
 
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddCookie(options =>
-    {
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.Name = "MerchStore.Auth";
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.Name = "MerchStore.Auth";
 
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-        options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
 
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    })
-    .AddApiKey(apiKeyValue);
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+})
+.AddApiKey(apiKeyValue);
 
 // Add API Key authorization
 builder.Services.AddAuthorization(options =>
