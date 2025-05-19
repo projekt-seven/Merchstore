@@ -36,3 +36,69 @@ body {
 .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.hero-banner {
+  width: 100vw; /* Full viewport width */
+  margin-left: calc(-50vw + 50%); /* Center-align the full-width image */
+  overflow: hidden; /* Prevent overflow issues */
+}
+
+.hero-banner img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: #219099 10px solid;
+  padding-left: 10px;
+  text-decoration: none !important;
+}
+
+.product-details a {
+  color: inherit; /* Inherit text color from parent */
+  text-decoration: none !important;
+}
+
+.product-info {
+  flex: 1; /* Allow product-info to take up available space */
+  text-decoration: none !important;
+}
+
+.add-icon-container {
+  margin: 0 10px;
+}
+
+.add-icon-container a {
+  display: inline-block;
+  text-decoration: none !important;
+}
+
+.add-icon-container img {
+  cursor: pointer;
+}
+.add-icon-container img:hover {
+  width: 34px;
+  height: 34px;
+}
+
+.card-text {
+  color: #3e3e3e !important;
+}
+
+.product-link-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth animation for transform and shadow */
+}
+
+.product-link-card:hover {
+  transform: scale(1.05); /* Slightly enlarge the card on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
+}
+
+.product-detail {
+  text-decoration: none !important;
+  color: #3e3e3e !important;
+}
