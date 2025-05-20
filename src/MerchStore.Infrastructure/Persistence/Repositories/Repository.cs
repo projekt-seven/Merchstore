@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MerchStore.Domain.Common;
-using MerchStore.Domain.Interfaces;
+using MerchStore.Application.Common.Interfaces;
 
 namespace MerchStore.Infrastructure.Persistence.Repositories;
 

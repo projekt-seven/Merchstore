@@ -1,10 +1,13 @@
-public class CreateProductRequest
-public class CreateProductRequest
+namespace MerchStore.Application.Products.Commands
 {
-	public string Name { get; set; }
-	public string Description { get; set; }
-	public string Category { get; set; }
-	public int Stock { get; set; }
-	public decimal Price { get; set; }
-	public string ImageUrl { get; set; }
+	public class CreateProductRequest
+	{
+		public string Name { get; set; } = string.Empty;
+		public string Description { get; set; } = string.Empty;
+		public decimal Price { get; set; }   // decimal → blir Money i domen
+		public int StockQuantity { get; set; } // OBS: ändrat från Stock
+		public string Category { get; set; } = string.Empty;
+		public string? ImageUrl { get; set; } // nullable
+		public List<string>? Tags { get; set; } // valfritt
+	}
 }

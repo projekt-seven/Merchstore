@@ -1,11 +1,16 @@
 using MediatR;
 using System;
-public class CreateProductCommand : IRequest<Guid>
+namespace MerchStore.Application.Products.Commands
 {
-	public CreateProductRequest Product { get; }
 
-	Public CreateProductCommand(CreateProductRequest product)
+
+	public class CreateProductCommand : IRequest<Guid>
 	{
-		Product = product ?? throw new ArgumentNullException(nameof(product));
+		public CreateProductRequest Product { get; }
+
+		public CreateProductCommand(CreateProductRequest product)
+		{
+			Product = product ?? throw new ArgumentNullException(nameof(product));
+		}
 	}
 }

@@ -86,6 +86,12 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API for MerchStore product catalog"
     });
 
+    options.SwaggerDoc("admin", new OpenApiInfo
+    {
+        Title = "Admin API",
+        Version = "v1"
+    });
+
     // Include XML comments (if enabled in project settings)
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -125,6 +131,18 @@ builder.Services.AddSwaggerGen(options =>
     {
         return apiDesc.ActionDescriptor?.DisplayName;
     });
+
+    // Add grouping via namespace
+    options.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        if (docName == "v1")
+            return !apiDesc.GroupName?.Equals("Admin", StringComparison.OrdinalIgnoreCase) ?? true;
+
+        if (docName == "admin")
+            return apiDesc.GroupName?.Equals("Admin", StringComparison.OrdinalIgnoreCase) ?? false;
+
+        return false;
+    });
 });
 
 builder.Services.AddCors(options =>
@@ -138,9 +156,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-var app = builder.Build();
-builder.Logging.AddConsole();
 
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 // Seed databasen endast i Development
@@ -163,11 +180,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+        options.SwaggerEndpoint("/swagger/admin/swagger.json", "Admin API");
     });
 }
-
-
-
+builder.Logging.AddConsole();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
