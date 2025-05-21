@@ -105,7 +105,18 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "ApiKeyScheme"
     });
 
-    // Add requirement to use API key for all operations
+    // ✅ Add Bearer token support
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+
+    // Add security requirements
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -115,6 +126,17 @@ builder.Services.AddSwaggerGen(options =>
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        },
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
             Array.Empty<string>()
