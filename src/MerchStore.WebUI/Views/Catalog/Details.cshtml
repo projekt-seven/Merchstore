@@ -54,11 +54,52 @@
                 <h5>Description</h5>
                 <p class="lead">@Model.Description</p>
             </div>
-        </div>
-        <div class="mt-4">
-            <button type="submit" class="btn-add-to-cart" @(Model.InStock ? "" : "disabled")>
+        </div>        <div class="mt-4">
+            <button id="add-to-cart-btn" data-product-id="@Model.Id" class="btn-add-to-cart" @(Model.InStock ? "" : "disabled")>
                 Add to Cart
             </button>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const addToCartBtn = document.getElementById("add-to-cart-btn");
+            
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener("click", function() {
+                    const productId = this.getAttribute("data-product-id");
+                    
+                    // Send AJAX request to add item to cart
+                    fetch('/Cart/AddItem', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        },
+                        body: `productId=${productId}&quantity=1`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message and update cart count
+                            const toast = document.createElement("div");
+                            toast.className = "position-fixed top-0 end-0 p-3 m-3 bg-success text-white rounded shadow";
+                            toast.style.zIndex = "1050";
+                            toast.innerHTML = "<p class='mb-0'><i class='bi bi-check-circle'></i> Product added to cart!</p>";
+                            document.body.appendChild(toast);
+                            
+                            // Refresh the page to update cart count
+                            setTimeout(function() {
+                                toast.remove();
+                                location.reload();
+                            }, 1500);
+                        }
+                    })
+                    .catch(error => console.error('Error adding to cart:', error));
+                });
+            }
+        });
+    </script>
+}

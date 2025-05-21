@@ -37,10 +37,9 @@
                         <div class="product-info gap-2 d-flex flex-column">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text">@product.FormattedPrice kr</p>
-                        </div>
-                        <div class="add-icon-container">
+                        </div>                        <div class="add-icon-container">
                             <div class="add-icon-wrapper">
-                                <img src="~/images/add_icon.png" alt="add product icon" class="add-icon" width="30" height="30">
+                                <img src="~/images/add_icon.png" alt="add product icon" class="add-icon add-to-cart-icon" data-product-id="@product.Id" width="30" height="30" style="cursor: pointer;">
                             </div>
                         </div>
                     </div>
@@ -56,4 +55,49 @@ else
         <h2>No products available</h2>
         <p>Check back soon for our latest merchandise!</p>
     </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add click event listeners to all add-to-cart icons
+            document.querySelectorAll('.add-to-cart-icon').forEach(function(icon) {
+                icon.addEventListener('click', function(event) {
+                    // Prevent the link click from navigating
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    const productId = this.getAttribute('data-product-id');
+                    
+                    // Send AJAX request to add item to cart
+                    fetch('/Cart/AddItem', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        },
+                        body: `productId=${productId}&quantity=1`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message and update cart count
+                            const toast = document.createElement("div");
+                            toast.className = "position-fixed top-0 end-0 p-3 m-3 bg-success text-white rounded shadow";
+                            toast.style.zIndex = "1050";
+                            toast.innerHTML = "<p class='mb-0'><i class='bi bi-check-circle'></i> Product added to cart!</p>";
+                            document.body.appendChild(toast);
+                            
+                            // Refresh the page to update cart count
+                            setTimeout(function() {
+                                toast.remove();
+                                location.reload();
+                            }, 1500);
+                        }
+                    })
+                    .catch(error => console.error('Error adding to cart:', error));
+                });
+            });
+        });
+    </script>
 }
