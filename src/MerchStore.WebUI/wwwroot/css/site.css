@@ -168,3 +168,28 @@ body {
     height: auto; /* Allow height to adjust for smaller screens */
   }
 }
+
+.shopping-cart-item a,
+.shopping-cart-item a:visited {
+  color: #219099 !important;
+}
+.shopping-cart-item a:hover {
+  color: #0b4c52 !important;
+}
+
+.btn-outline-primary {
+  color: #219099;
+  border-color: #219099;
+}
+.btn-outline-primary:hover {
+  background-color: #219099;
+  color: white;
+}
+.btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.cart-table td,
+.cart-table th {
+  vertical-align: middle;
+}
