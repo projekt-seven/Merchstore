@@ -9,6 +9,7 @@ using MerchStore.WebUI.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 public class Program
@@ -16,7 +17,6 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.Logging.AddConsole();
 
         // Add services to the container.
         builder.Services.AddControllersWithViews()
@@ -28,8 +28,8 @@ public class Program
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-        var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY")
-                            ?? builder.Configuration["ApiKey:Value"];
+        var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY") 
+                        ?? builder.Configuration["ApiKey:Value"];
 
         if (string.IsNullOrWhiteSpace(apiKeyValue))
         {
@@ -47,8 +47,10 @@ public class Program
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             options.Cookie.SameSite = SameSiteMode.Lax;
             options.Cookie.Name = "MerchStore.Auth";
+
             options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
             options.SlidingExpiration = true;
+
             options.LoginPath = "/Account/Login";
             options.LogoutPath = "/Account/Logout";
             options.AccessDeniedPath = "/Account/AccessDenied";
@@ -68,9 +70,13 @@ public class Program
                       .RequireAuthenticatedUser());
         });
 
+        // Add Application services - this includes Services, Interfaces, etc.
         builder.Services.AddApplication();
+
+        // Add Infrastructure services - this includes DbContext, Repositories, etc.
         builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
+        // Add Swagger for API documentation
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -81,6 +87,7 @@ public class Program
                 Description = "API for MerchStore product catalog"
             });
 
+            // Include XML comments (if enabled in project settings)
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             if (File.Exists(xmlPath))
@@ -88,6 +95,7 @@ public class Program
                 options.IncludeXmlComments(xmlPath);
             }
 
+            // Add API key security definition
             options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
             {
                 Description = "API Key required to access endpoints. Use: X-API-Key: API_KEY",
@@ -97,6 +105,7 @@ public class Program
                 Scheme = "ApiKeyScheme"
             });
 
+            // Add requirement to use API key for all operations
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -112,6 +121,7 @@ public class Program
                 }
             });
 
+            // Prevent duplicate operation IDs for minimal APIs
             options.CustomOperationIds(apiDesc =>
             {
                 return apiDesc.ActionDescriptor?.DisplayName;
@@ -121,32 +131,36 @@ public class Program
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowAllOrigins",
-                cors =>
+                builder =>
                 {
-                    cors.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    builder.AllowAnyOrigin()  // Allow requests from any origin
+                           .AllowAnyHeader()  // Allow any headers
+                           .AllowAnyMethod(); // Allow any HTTP method
                 });
         });
 
         var app = builder.Build();
+        builder.Logging.AddConsole();
 
-        // ✅ Kör seeding i både Development och Production
-        if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+        // ✅ Läs SeedOnStartup-flaggan
+        var shouldSeed = builder.Configuration.GetValue<bool>("SeedOnStartup");
+
+        // ✅ Kör seedning endast om flaggan är satt till true
+        if (shouldSeed)
         {
             using var scope = app.Services.CreateScope();
             var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
             await seeder.SeedAsync();
         }
 
-        // Felhantering i Production
+        // Konfigurera felhantering och HSTS i Production
         if (app.Environment.IsProduction())
         {
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
 
-        // Swagger i både Development och Production
+        // Aktivera Swagger i både Development och Production
         if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         {
             app.UseSwagger();
@@ -164,7 +178,6 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapStaticAssets();
 
         app.MapControllerRoute(
