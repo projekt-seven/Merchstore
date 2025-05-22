@@ -12,8 +12,32 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
+else
+{
+    builder.Services.AddApplicationInsightsTelemetry(options =>
+    {
+        options.EnableAdaptiveSampling = false;
+        options.ApplicationVersion = "dev-" + DateTime.Now.ToString("yyyyMMdd-HHmm");
+        options.EnableDebugLogger = true;
+    });
+
+    builder.Services.Configure<TelemetryConfiguration>(config =>
+    {
+        config.TelemetryChannel = new InMemoryChannel
+        {
+            DeveloperMode = true
+        };
+    });
+}
 
 // Add services to the container.
 builder.Services.AddControllersWithViews()
