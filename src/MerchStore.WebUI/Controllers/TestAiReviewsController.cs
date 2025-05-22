@@ -18,7 +18,8 @@ public class TestAiReviewsController : ControllerBase
     public TestAiReviewsController(
         AiReviewsClient client,
         ICatalogService catalogService,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory
+        IConfiguration configuration)
     {
         _client = client;
         _catalogService = catalogService;
