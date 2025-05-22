@@ -43,10 +43,10 @@ public class TestAiReviewsController : ControllerBase
         try
         {
             var result = await _client.RegisterProductAsync(
-                productId: "T12348",
-                name: "North Waddle Cap",
-                category: "accessories",
-                tags: new[] { "penguin", "cap", "black" }
+                productId: "T888",
+                name: "Simple Shirt",
+                category: "t-shirts",
+                tags: new[] { "basic", "white" }
             );
 
             return Content(result, "application/json");
