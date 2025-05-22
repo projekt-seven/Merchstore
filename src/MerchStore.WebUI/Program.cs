@@ -142,7 +142,7 @@ builder.Logging.AddConsole();
 // Configure the HTTP request pipeline.
 
 // Seed databasen endast i Development
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.Services.SeedDatabaseAsync().Wait();
 }
