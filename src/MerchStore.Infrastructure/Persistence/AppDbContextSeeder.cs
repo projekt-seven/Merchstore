@@ -69,7 +69,7 @@ public class AppDbContextSeeder
             new Product(
                 "White T-Shirt",
                 "A white cotton t-shirt featuring the North Waddle logo on the front.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/white_tshirt.jpg"),
                 Money.FromSEK(249.00m),
                 60,
                 "t-shirts",
@@ -78,7 +78,7 @@ public class AppDbContextSeeder
             new Product(
                 "Black Sweater",
                 "A black cozy sweater with the North Waddle logo printed on the chest.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/black_sweater.jpg"),
                 Money.FromSEK(499.00m),
                 40,
                 "sweaters",
@@ -87,7 +87,7 @@ public class AppDbContextSeeder
             new Product(
                 "2025 Calendar",
                 "A 12-month calendar for 2025 featuring custom North Waddle design and branding.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/calender.jpg"),
                 Money.FromSEK(129.00m),
                 75,
                 "calendars",
@@ -96,7 +96,7 @@ public class AppDbContextSeeder
             new Product(
                 "Logo Coasters (Set of 4)",
                 "Set of 4 white background coasters with the North Waddle logo printed on each.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/coasters.jpg"),
                 Money.FromSEK(99.00m),
                 120,
                 "home",
@@ -105,7 +105,7 @@ public class AppDbContextSeeder
             new Product(
                 "White Tote Bag",
                 "A durable white tote bag featuring the North Waddle logo, great for everyday use.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/tote_bag.jpg"),
                 Money.FromSEK(149.00m),
                 90,
                 "bags",
@@ -114,7 +114,7 @@ public class AppDbContextSeeder
             new Product(
                 "Water Bottle",
                 "A sleek white water bottle printed with the North Waddle logo, keeps drinks cold or hot.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/bottle.jpg"),
                 Money.FromSEK(199.00m),
                 70,
                 "bottles",
@@ -123,7 +123,7 @@ public class AppDbContextSeeder
             new Product(
                 "North Waddle Sticker Pack",
                 "Fun and colorful stickers featuring the North Waddle brand and mascot.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/stickers.jpg"),
                 Money.FromSEK(59.00m),
                 150,
                 "stickers",
@@ -132,7 +132,7 @@ public class AppDbContextSeeder
             new Product(
                 "North Waddle Notebook",
                 "A stylish and practical notebook with North Waddle branding for your notes and ideas.",
-                new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                new Uri("https://northwaddlestorage.blob.core.windows.net/northwaddlecontainer/notebook.jpg"),
                 Money.FromSEK(119.00m),
                 80,
                 "stationery",
