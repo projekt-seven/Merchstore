@@ -1,0 +1,14 @@
+@model int
+
+<div class="d-flex justify-content-end shopping-cart-box">
+    <a asp-controller="Cart" asp-action="Index" class="position-relative">
+        <img src="~/images/shopping-bag-icon.png" alt="Shopping icon" width="30" height="30" class="d-inline-block align-text-top">
+        @if (Model > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                @Model
+                <span class="visually-hidden">items in cart</span>
+            </span>
+        }
+    </a>
+</div>

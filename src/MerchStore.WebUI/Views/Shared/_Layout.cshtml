@@ -13,8 +13,7 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm border-bottom box-shadow py-3 px-1">
+    <header>        <nav class="navbar navbar-expand-sm border-bottom box-shadow py-3 px-1">
             <div class="container-fluid">
                 <!-- Logo on the left -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -49,13 +48,11 @@
                             <partial name="_LoginPartial" />
                         </li>
                     </ul>
-
-                    <!-- Shopping icon on the right -->
-                    <div class="d-flex justify-content-end shopping-cart-box">
-                        <a asp-area="" asp-controller="Home" asp-action="Index">
-                            <img src="~/images/shopping-bag-icon.png" alt="Shopping icon" width="30" height="30" class="d-inline-block align-text-top">
-                        </a>
-                    </div>
+                </div>
+                
+                <!-- Shopping cart icon on the right -->
+                <div class="ms-auto shopping-cart-box">
+                    @await Component.InvokeAsync("CartCount")
                 </div>
             </div>
         </nav>
@@ -65,6 +62,9 @@
             @RenderBody()
         </main>
     </div>
+
+    <!-- Anti-forgery token for AJAX requests -->
+    @Html.AntiForgeryToken()
 
     <footer class="border-top footer text-muted">
         <div class="container">

@@ -48,3 +48,5 @@ jobs:
               ADMIN_EMAIL="${{ secrets.ADMIN_USER_EMAIL }}" \
               ADMIN_ROLE="${{ secrets.ADMIN_USER_ROLE }}" \
               APPLICATIONINSIGHTS_CONNECTIONSTRING="${{ secrets.APPLICATIONINSIGHTS_CONNECTIONSTRING }}"
+              AI_API_USERNAME="${{ secrets.AI_API_USERNAME }}" \
+              AI_API_PASSWORD="${{ secrets.AI_API_PASSWORD }}"
