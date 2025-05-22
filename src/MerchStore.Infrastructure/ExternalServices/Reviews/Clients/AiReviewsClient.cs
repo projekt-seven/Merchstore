@@ -20,7 +20,7 @@ namespace MerchStore.Infrastructure.ExternalServices.Reviews.Clients
         {
             var loginData = new
             {
-                username = "test_user",
+                username = "hugo",
                 password = "secret123",
                 authType = "password"
             };

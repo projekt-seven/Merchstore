@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Infrastructure.ExternalServices.Reviews.Clients;
 using MerchStore.Application.Services.Interfaces;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace MerchStore.WebUI.Controllers;
 
@@ -10,51 +13,33 @@ public class TestAiReviewsController : ControllerBase
 {
     private readonly AiReviewsClient _client;
     private readonly ICatalogService _catalogService;
+    private readonly HttpClient _httpClient;
 
-    public TestAiReviewsController(AiReviewsClient client, ICatalogService catalogService)
+    public TestAiReviewsController(
+        AiReviewsClient client,
+        ICatalogService catalogService,
+        IHttpClientFactory httpClientFactory)
     {
         _client = client;
         _catalogService = catalogService;
+        _httpClient = httpClientFactory.CreateClient("AiReviewsHttpClient");
     }
 
-    /// <summary>
-    /// Hämtar produkt + recensioner från AI Reviews
-    /// </summary>
-    [HttpGet("{productId}")]
-    public async Task<IActionResult> GetFromAiReviews(string productId)
+    // 🔐 Logga in mot AI Reviews och hämta Bearer-token
+    private async Task<string> GetBearerTokenAsync()
     {
-        try
+        var loginPayload = new
         {
-            var data = await _client.GetProductDataAsync(productId);
-            return Content(data, "application/json");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
-    }
+            username = "hugo",        // <-- byt till ditt användarnamn
+            password = "secret123",        // <-- och lösenord
+            authType = "password"
+        };
 
-    /// <summary>
-    /// Registrerar en hårdkodad testprodukt i AI Reviews
-    /// </summary>
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterProductForAiReviews()
-    {
-        try
-        {
-            var result = await _client.RegisterProductAsync(
-                productId: "T888",
-                name: "Simple Shirt",
-                category: "t-shirts",
-                tags: new[] { "basic", "white" }
-            );
+        var loginResponse = await _httpClient.PostAsJsonAsync("http://161.97.151.105:8081/auth/login", loginPayload);
+        loginResponse.EnsureSuccessStatusCode();
 
-            return Content(result, "application/json");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var json = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
+        return json.GetProperty("token").GetString();
     }
 
     /// <summary>
@@ -65,23 +50,56 @@ public class TestAiReviewsController : ControllerBase
     {
         var products = await _catalogService.GetAllProductsAsync();
         var results = new List<object>();
+        string token;
+
+        try
+        {
+            token = await GetBearerTokenAsync();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Login failed: {ex.Message}" });
+        }
 
         foreach (var product in products)
         {
             try
             {
-                var result = await _client.RegisterProductAsync(
-                    product.Id.ToString(),
-                    product.Name,
-                    product.Category,
-                    product.Tags.Select(t => t.ToLower()).ToArray()
-                );
+                var payload = new
+                {
+                    mode = "withDetails",
+                    productId = product.Id.ToString(),
+                    productName = product.Name,
+                    category = product.Category,
+                    tags = product.Tags.Select(t => t.ToLower()).ToArray()
+                };
 
-                results.Add(new { productId = product.Id, status = "OK", response = result });
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://161.97.151.105:8081/product")
+                {
+                    Content = JsonContent.Create(payload)
+                };
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                results.Add(new
+                {
+                    productId = product.Id,
+                    status = "OK",
+                    response = content
+                });
             }
             catch (Exception ex)
             {
-                results.Add(new { productId = product.Id, status = "FAILED", error = ex.Message });
+                results.Add(new
+                {
+                    productId = product.Id,
+                    status = "FAILED",
+                    error = ex.Message
+                });
             }
         }
 

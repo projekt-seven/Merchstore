@@ -74,6 +74,11 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
+builder.Services.AddHttpClient("AiReviewsHttpClient", client =>
+{
+    client.BaseAddress = new Uri("https://aireviews.drillbi.se"); // byt till korrekt adress
+});
+
 builder.Services.AddHttpClient<AiReviewsClient>();
 
 // Add Swagger for API documentation
