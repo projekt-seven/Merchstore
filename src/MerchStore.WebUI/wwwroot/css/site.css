@@ -189,6 +189,23 @@ body {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.color-primary-north {
+  background-color: #219099;
+  color: white;
+}
+
+.btn-primary-north {
+  background-color: #219099;
+  color: white;
+}
+.btn-primary-north:hover {
+  background-color: #17666d;
+  color: white;
+}
+.btn-primary-north:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
 .cart-table td,
 .cart-table th {
   vertical-align: middle;
