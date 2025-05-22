@@ -24,19 +24,29 @@ public class TestAiReviewsController : ControllerBase
         _client = client;
         _catalogService = catalogService;
         _httpClient = httpClientFactory.CreateClient("AiReviewsHttpClient");
+        _configuration = configuration;
     }
 
     // 🔐 Logga in mot AI Reviews och hämta Bearer-token
     private async Task<string> GetBearerTokenAsync()
     {
+        var username = Environment.GetEnvironmentVariable("AI_API_USERNAME") 
+                    ?? _configuration["AiReviews:Auth:Username"];
+
+        var password = Environment.GetEnvironmentVariable("AI_API_PASSWORD") 
+                    ?? _configuration["AiReviews:Auth:Password"];
+
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            throw new InvalidOperationException("AI API credentials are missing.");
+
         var loginPayload = new
         {
-            username = "hugo",        // <-- byt till ditt användarnamn
-            password = "secret123",        // <-- och lösenord
+            username = username,
+            password = password,
             authType = "password"
         };
 
-        var loginResponse = await _httpClient.PostAsJsonAsync("http://161.97.151.105:8081/auth/login", loginPayload);
+        var loginResponse = await _httpClient.PostAsJsonAsync("https://aireviews.drillbi.se/auth/login", loginPayload);
         loginResponse.EnsureSuccessStatusCode();
 
         var json = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
