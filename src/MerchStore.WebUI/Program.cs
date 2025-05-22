@@ -4,6 +4,7 @@ using MerchStore.Application;
 using MerchStore.Infrastructure;
 using MerchStore.Infrastructure.ExternalServices.Reviews.Clients;
 using MerchStore.Models;
+using MerchStore.Middleware;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Endpoints;
 using MerchStore.WebUI.Infrastructure;
@@ -104,6 +105,15 @@ builder.Services.AddHttpClient("AiReviewsHttpClient", client =>
 });
 
 builder.Services.AddHttpClient<AiReviewsClient>();
+
+// Add session services
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
