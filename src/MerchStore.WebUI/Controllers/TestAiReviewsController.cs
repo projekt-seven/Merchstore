@@ -14,11 +14,12 @@ public class TestAiReviewsController : ControllerBase
     private readonly AiReviewsClient _client;
     private readonly ICatalogService _catalogService;
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
 
     public TestAiReviewsController(
         AiReviewsClient client,
         ICatalogService catalogService,
-        IHttpClientFactory httpClientFactory
+        IHttpClientFactory httpClientFactory,
         IConfiguration configuration)
     {
         _client = client;
