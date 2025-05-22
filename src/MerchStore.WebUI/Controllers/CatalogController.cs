@@ -7,10 +7,12 @@ namespace MerchStore.WebUI.Controllers;
 public class CatalogController : Controller
 {
     private readonly ICatalogService _catalogService;
+    private readonly IAiReviewService _aiReviewService;
 
-    public CatalogController(ICatalogService catalogService)
+    public CatalogController(ICatalogService catalogService, IAiReviewService aiReviewService)
     {
         _catalogService = catalogService;
+        _aiReviewService = aiReviewService;
     }
 
     // GET: Catalog
@@ -69,6 +71,9 @@ public class CatalogController : Controller
                 return NotFound();
             }
 
+            // Get AI-generated reviews for the product
+            var aiReviews = await _aiReviewService.GetReviewAsync(id);
+
             // Map domain entity to view model
             var viewModel = new ProductDetailsViewModel
             {
@@ -78,7 +83,8 @@ public class CatalogController : Controller
                 FormattedPrice = product.Price.ToString(),
                 PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
-                StockQuantity = product.StockQuantity
+                StockQuantity = product.StockQuantity,
+                Reviews = aiReviews // <- detta måste matcha din viewmodel
             };
 
             return View(viewModel);
@@ -86,11 +92,12 @@ public class CatalogController : Controller
         catch (Exception ex)
         {
             // Log the exception
-            Console.WriteLine($"Error in ProductDetails: {ex.Message}");
+            Console.WriteLine($"Error in CatalogController.Details: {ex.Message}");
 
             // Show an error message to the user
             ViewBag.ErrorMessage = "An error occurred while loading the product. Please try again later.";
             return View("Error");
         }
     }
+
 }
