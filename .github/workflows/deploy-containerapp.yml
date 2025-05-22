@@ -46,4 +46,6 @@ jobs:
               ADMIN_USERNAME="${{ secrets.ADMIN_USER_USERNAME }}" \
               ADMIN_PASSWORD="${{ secrets.ADMIN_USER_PASSWORD }}" \
               ADMIN_EMAIL="${{ secrets.ADMIN_USER_EMAIL }}" \
-              ADMIN_ROLE="${{ secrets.ADMIN_USER_ROLE }}"
+              ADMIN_ROLE="${{ secrets.ADMIN_USER_ROLE }}" \
+              AI_API_USERNAME="${{ secrets.AI_API_USERNAME }}" \
+              AI_API_PASSWORD="${{ secrets.AI_API_PASSWORD }}"
