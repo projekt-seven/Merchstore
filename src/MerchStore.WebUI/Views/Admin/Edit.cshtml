@@ -1,0 +1,62 @@
+@model MerchStore.Application.Products.Commands.CreateProductRequest
+
+@{
+	ViewData["Title"] = "Ändra produkt";
+	var id = ViewBag.ProductId;
+}
+
+<h2 class="mb-4">Uppdatera produkt</h2>
+
+<div class="card shadow-sm">
+	<div class="card-body">
+		<form asp-action="Edit" asp-route-id="@id" method="post">
+			<div class="mb-3">
+				<label asp-for="Name" class="form-label"></label>
+				<input asp-for="Name" class="form-control" />
+				<div class="text-danger" asp-validation-for="Name"></div>
+			</div>
+
+			<div class="mb-3">
+				<label asp-for="Description" class="form-label"></label>
+				<textarea asp-for="Description" class="form-control" rows="3"></textarea>
+				<div class="text-danger" asp-validation-for="Description"></div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6 mb-3">
+					<label asp-for="Price" class="form-label"></label>
+					<input asp-for="Price" class="form-control" />
+					<div class="text-danger" asp-validation-for="Price"></div>
+				</div>
+
+				<div class="col-md-6 mb-3">
+					<label asp-for="StockQuantity" class="form-label"></label>
+					<input asp-for="StockQuantity" class="form-control" />
+					<div class="text-danger" asp-validation-for="StockQuantity"></div>
+				</div>
+			</div>
+
+			<div class="mb-3">
+				<label asp-for="Category" class="form-label"></label>
+				<input asp-for="Category" class="form-control" />
+				<div class="text-danger" asp-validation-for="Category"></div>
+			</div>
+
+			<div class="mb-3">
+				<label asp-for="ImageUrl" class="form-label"></label>
+				<input asp-for="ImageUrl" class="form-control" />
+				<div class="form-text">Länk till produktbild (valfritt)</div>
+				<div class="text-danger" asp-validation-for="ImageUrl"></div>
+			</div>
+
+			<div class="mb-3">
+				<label asp-for="Tags" class="form-label">Taggar (kommatecken-separerade)</label>
+				<input name="Tags" class="form-control" />
+				<div class="form-text">Ex: hoodie, nyhet, svart</div>
+			</div>
+
+			<button type="submit" class="btn btn-success">uppdatera produkt</button>
+			<a asp-action="Index" class="btn btn-outline-secondary ms-2">↩ Tillbaka</a>
+		</form>
+	</div>
+</div>

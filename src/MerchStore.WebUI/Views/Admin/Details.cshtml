@@ -1,0 +1,18 @@
+@model MerchStore.Application.Products.DTOs.ProductDetailsDto
+
+@{
+	ViewData["Title"] = "Produktdetaljer";
+}
+
+<h1>@Model.Name</h1>
+<p><strong>Beskrivning:</strong> @Model.Description</p>
+<p><strong>Pris:</strong> @Model.Price.ToString("0.00")</p>
+<p><strong>Lager:</strong> @Model.StockQuantity</p>
+<p><strong>Kategori:</strong> @Model.Category</p>
+@if (Model.ImageUrl is not null)
+{
+	<img src="@Model.ImageUrl" alt="@Model.Name" style="max-width: 300px;" />
+}
+<p><strong>Taggar:</strong> @string.Join(", ", Model.Tags)</p>
+
+<a asp-action="Products" class="btn btn-secondary">Tillbaka</a>

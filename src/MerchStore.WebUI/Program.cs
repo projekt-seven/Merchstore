@@ -15,7 +15,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMediatR(typeof(MerchStore.Application.AssemblyReference).Assembly);
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(MerchStore.Application.AssemblyReference).Assembly);
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>

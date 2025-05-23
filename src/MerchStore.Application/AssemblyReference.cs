@@ -1,4 +1,3 @@
-namespace MerchStore.Application
-{
-	public static class AssemblyReference { }
-}
+namespace MerchStore.Application;
+
+public static class AssemblyReference { }
