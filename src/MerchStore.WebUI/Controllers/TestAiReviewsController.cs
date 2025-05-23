@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using MerchStore.Infrastructure.ExternalServices.Reviews.Clients;
 using MerchStore.Application.Services.Interfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -11,18 +10,15 @@ namespace MerchStore.WebUI.Controllers;
 [Route("test-ai")]
 public class TestAiReviewsController : ControllerBase
 {
-    private readonly AiReviewsClient _client;
     private readonly ICatalogService _catalogService;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
 
     public TestAiReviewsController(
-        AiReviewsClient client,
         ICatalogService catalogService,
         IHttpClientFactory httpClientFactory,
         IConfiguration configuration)
     {
-        _client = client;
         _catalogService = catalogService;
         _httpClient = httpClientFactory.CreateClient("AiReviewsHttpClient");
         _configuration = configuration;
@@ -31,10 +27,10 @@ public class TestAiReviewsController : ControllerBase
     // 🔐 Logga in mot AI Reviews och hämta Bearer-token
     private async Task<string> GetBearerTokenAsync()
     {
-        var username = Environment.GetEnvironmentVariable("AI_API_USERNAME") 
+        var username = Environment.GetEnvironmentVariable("AI_API_USERNAME")
                     ?? _configuration["AiReviews:Auth:Username"];
 
-        var password = Environment.GetEnvironmentVariable("AI_API_PASSWORD") 
+        var password = Environment.GetEnvironmentVariable("AI_API_PASSWORD")
                     ?? _configuration["AiReviews:Auth:Password"];
 
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
@@ -113,6 +109,31 @@ public class TestAiReviewsController : ControllerBase
                     error = ex.Message
                 });
             }
+        }
+
+        return Ok(results);
+    }
+
+    [HttpDelete("delete-all")]
+    public async Task<IActionResult> DeleteAllSeededProducts()
+    {
+        var token = await GetBearerTokenAsync();
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var products = await _catalogService.GetAllProductsAsync(); // Hämtar alla produkter från vår databas
+        var results = new List<object>();
+
+        foreach (var product in products)
+        {
+            var response = await _httpClient.DeleteAsync($"http://161.97.151.105:8081/product/{product.Id}");
+            var body = await response.Content.ReadAsStringAsync();
+
+            results.Add(new
+            {
+                productId = product.Id,
+                status = response.StatusCode.ToString(),
+                response = body
+            });
         }
 
         return Ok(results);
