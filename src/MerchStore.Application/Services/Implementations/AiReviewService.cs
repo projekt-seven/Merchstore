@@ -4,8 +4,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Application.DTOs;
-using Application.Services.Interfaces;
+using MerchStore.Application.DTOs;
+using MerchStore.Application.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 
 public class AiReviewService : IAiReviewService

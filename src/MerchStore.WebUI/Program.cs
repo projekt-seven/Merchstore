@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
-using MerchStore.Infrastructure.ExternalServices.Reviews.Clients;
 using MerchStore.Models;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Endpoints;
@@ -105,7 +104,7 @@ builder.Services.AddHttpClient("AiReviewsHttpClient", client =>
     client.BaseAddress = new Uri("https://aireviews.drillbi.se"); // byt till korrekt adress
 });
 
-builder.Services.AddHttpClient<AiReviewsClient>();
+//builder.Services.AddHttpClient<AiReviewsClient>();
 
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
