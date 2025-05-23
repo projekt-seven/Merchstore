@@ -16,9 +16,10 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, L
 
 	public async Task<List<ProductListItemDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
 	{
-		var products = await _productRepository.GetAllAsync();
-
-		return products.Select(p => new ProductListItemDto
+		var products = await _productRepository.GetAllAsync(cancellationToken);
+var sorted = products
+    .OrderByDescending(p => p.Id) // om `CreatedAt` finns
+    .Select(p => new ProductListItemDto
 		{
 			Id = p.Id,
 			Name = p.Name,
@@ -26,5 +27,6 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, L
 			Price = p.Price.Amount,
 			StockQuantity = p.StockQuantity
 		}).ToList();
+		return sorted;
 	}
 }

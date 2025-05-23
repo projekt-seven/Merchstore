@@ -23,4 +23,8 @@ public class ProductRepository : Repository<Product, Guid>, IProductRepository
     {
         return await _dbSet.Where(p => p.Category == category).ToListAsync();
     }
+   public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken)
+{
+    return await _dbSet.ToListAsync(cancellationToken);
+}
 }

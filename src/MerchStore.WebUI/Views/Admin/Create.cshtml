@@ -9,6 +9,8 @@
 <div class="card shadow-sm">
 	<div class="card-body">
 		<form asp-action="Create" method="post">
+			<!-- Visa valideringsfel här -->
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 			<div class="mb-3">
 				<label asp-for="Name" class="form-label"></label>
 				<input asp-for="Name" class="form-control" />

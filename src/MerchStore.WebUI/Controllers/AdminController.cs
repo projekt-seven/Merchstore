@@ -76,6 +76,10 @@ public class AdminController : Controller
             request.Tags = Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                .Select(t => t.Trim())
                                .ToList();
+                               
+                               await _mediator.Send(new CreateProductCommand(request));
+    TempData["SuccessMessage"] = "Produkten skapades.";
+    return RedirectToAction(nameof(Products));
 
         try
         {
@@ -111,16 +115,20 @@ public class AdminController : Controller
         return View(request);
     }
     [HttpPost]
-    public async Task<IActionResult> Edit(Guid id, CreateProductRequest request, [FromForm] string Tags)
-    {
-        if (!ModelState.IsValid) return View(request);
+public async Task<IActionResult> Edit(Guid id, CreateProductRequest request, string Tags)
+{
+    if (!ModelState.IsValid)
+        return View(request);
 
-        if (!string.IsNullOrWhiteSpace(Tags))
-            request.Tags = Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToList();
+    if (!string.IsNullOrWhiteSpace(Tags))
+        request.Tags = Tags.Split(',').Select(t => t.Trim()).ToList();
 
-        await _mediator.Send(new UpdateProductCommand(id, request));
-        return RedirectToAction(nameof(Products));
-    }
+    request.Id = id; // 👈 Kritiskt! ID sätts här
+    await _mediator.Send(new UpdateProductCommand(id, request));
+
+    TempData["SuccessMessage"] = "Produkten har uppdaterats.";
+    return RedirectToAction(nameof(Products));
+}
     // ta bort en produkt
     [HttpGet]
     public async Task<IActionResult> Delete(Guid id)
