@@ -1,3 +1,6 @@
+using MerchStore.Application.DTOs;
+
+
 namespace MerchStore.WebUI.Models.Catalog;
 
 public class ProductDetailsViewModel
@@ -11,4 +14,6 @@ public class ProductDetailsViewModel
     public bool HasImage => !string.IsNullOrEmpty(ImageUrl);
     public bool InStock => StockQuantity > 0;
     public int StockQuantity { get; set; }
+    public AiReviewResponse? Reviews { get; set; }
+
 }

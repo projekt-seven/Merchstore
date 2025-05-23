@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.WebUI.Models.Catalog;
+using Microsoft.AspNetCore.Hosting;
+using MerchStore.Application.DTOs;
 
 namespace MerchStore.WebUI.Controllers;
 
 public class CatalogController : Controller
 {
     private readonly ICatalogService _catalogService;
+    private readonly IAiReviewService _aiReviewService;
 
-    public CatalogController(ICatalogService catalogService)
+    public CatalogController(ICatalogService catalogService, IAiReviewService aiReviewService)
     {
         _catalogService = catalogService;
+        _aiReviewService = aiReviewService;
     }
 
     // GET: Catalog
@@ -18,10 +22,8 @@ public class CatalogController : Controller
     {
         try
         {
-            // Get all products from the service
             var products = await _catalogService.GetAllProductsAsync();
 
-            // Map domain entities to view models
             var productViewModels = products.Select(p => new ProductCardViewModel
             {
                 Id = p.Id,
@@ -35,7 +37,6 @@ public class CatalogController : Controller
                 StockQuantity = p.StockQuantity
             }).ToList();
 
-            // Create the product catalog view model
             var viewModel = new ProductCatalogViewModel
             {
                 FeaturedProducts = productViewModels
@@ -45,11 +46,7 @@ public class CatalogController : Controller
         }
         catch (Exception ex)
         {
-            // Log the exception
-            // In a real application, you should use a proper logging framework
             Console.WriteLine($"Error in ProductCatalog: {ex.Message}");
-
-            // Show an error message to the user
             ViewBag.ErrorMessage = "An error occurred while loading products. Please try again later.";
             return View("Error");
         }
@@ -60,16 +57,15 @@ public class CatalogController : Controller
     {
         try
         {
-            // Get the specific product from the service
             var product = await _catalogService.GetProductByIdAsync(id);
 
-            // Return 404 if product not found
             if (product is null)
             {
                 return NotFound();
             }
 
-            // Map domain entity to view model
+            var aiReviews = await _aiReviewService.GetReviewAsync(id);
+
             var viewModel = new ProductDetailsViewModel
             {
                 Id = product.Id,
@@ -78,19 +74,48 @@ public class CatalogController : Controller
                 FormattedPrice = product.Price.ToString(),
                 PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
-                StockQuantity = product.StockQuantity
+                StockQuantity = product.StockQuantity,
+                Reviews = aiReviews
             };
 
             return View(viewModel);
         }
         catch (Exception ex)
         {
-            // Log the exception
-            Console.WriteLine($"Error in ProductDetails: {ex.Message}");
-
-            // Show an error message to the user
+            Console.WriteLine($"Error in CatalogController.Details: {ex.Message}");
             ViewBag.ErrorMessage = "An error occurred while loading the product. Please try again later.";
             return View("Error");
         }
     }
+
+    /* 🟢 Mockfunktion för dev-miljö
+    private AiReviewResponse GetMockReviews()
+    {
+        return new AiReviewResponse
+        {
+            Stats = new AiReviewStats
+            {
+                CurrentAverage = 4.8,
+                TotalReviews = 2,
+                LastReviewDate = DateTime.UtcNow
+            },
+            Reviews = new List<AiSingleReview>
+            {
+                new AiSingleReview
+                {
+                    Name = "Mock Tester",
+                    Date = DateTime.UtcNow,
+                    Rating = 5,
+                    Text = "Mocked review in development mode!"
+                },
+                new AiSingleReview
+                {
+                    Name = "Mock Reviewer 2",
+                    Date = DateTime.UtcNow.AddDays(-2),
+                    Rating = 4,
+                    Text = "Second mocked review, looks great."
+                }
+            }
+        };
+    }*/
 }
