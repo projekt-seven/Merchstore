@@ -8,6 +8,7 @@ using MerchStore.Application.DTOs;
 using MerchStore.Application.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 
+
 public class AiReviewService : IAiReviewService
 {
     private readonly HttpClient _httpClient;
