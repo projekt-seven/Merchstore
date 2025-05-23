@@ -8,7 +8,11 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -19,13 +23,190 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #f8f8f8;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+.hero-banner {
+  width: 100vw; /* Full viewport width */
+  margin-left: calc(-50vw + 50%); /* Center-align the full-width image */
+  overflow: hidden; /* Prevent overflow issues */
+}
+
+.hero-banner img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: #219099 10px solid;
+  padding-left: 10px;
+  text-decoration: none !important;
+}
+
+.product-details a {
+  color: inherit; /* Inherit text color from parent */
+  text-decoration: none !important;
+}
+
+.product-info {
+  flex: 1; /* Allow product-info to take up available space */
+  text-decoration: none !important;
+}
+
+.add-icon-container {
+  margin: 0 10px;
+}
+
+.add-icon-container a {
+  display: inline-block;
+  text-decoration: none !important;
+}
+
+.add-icon-container img {
+  cursor: pointer;
+}
+.add-icon-container img:hover {
+  width: 34px;
+  height: 34px;
+}
+
+.card-text {
+  color: #3e3e3e !important;
+}
+
+.product-link-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth animation for transform and shadow */
+}
+
+.product-link-card:hover {
+  transform: scale(1.05); /* Slightly enlarge the card on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
+}
+
+.product-detail {
+  text-decoration: none !important;
+  color: #3e3e3e !important;
+}
+.breadcrumb {
+  text-decoration: none !important;
+  color: #3e3e3e !important;
+}
+
+.breadcrumb a {
+  text-decoration: none !important;
+  color: #219099 !important;
+}
+
+.breadcrumb-item {
+  padding-right: 0.625rem;
+}
+
+.btn-add-to-cart {
+  width: 100%;
+  background-color: #219099;
+  color: white;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none !important;
+  border: none;
+  margin-top: auto;
+}
+
+.product-detail-right {
+  height: 37.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-detail-container {
+  margin: auto auto;
+  display: flex;
+  justify-content: center;
+  max-width: 1100px;
+}
+
+.stock-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.in-stock {
+  background-color: green;
+}
+
+.out-of-stock {
+  background-color: red;
+}
+
+.btn-add-to-cart:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 768px) {
+  .product-detail-right {
+    padding-top: 2rem;
+    height: auto; /* Allow height to adjust for smaller screens */
+  }
+}
+
+.shopping-cart-item a,
+.shopping-cart-item a:visited {
+  color: #219099 !important;
+}
+.shopping-cart-item a:hover {
+  color: #0b4c52 !important;
+}
+
+.btn-outline-primary {
+  color: #219099;
+  border-color: #219099;
+}
+.btn-outline-primary:hover {
+  background-color: #219099;
+  color: white;
+}
+.btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.color-primary-north {
+  background-color: #219099;
+  color: white;
+}
+
+.btn-primary-north {
+  background-color: #219099;
+  color: white;
+}
+.btn-primary-north:hover {
+  background-color: #17666d;
+  color: white;
+}
+.btn-primary-north:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.cart-table td,
+.cart-table th {
+  vertical-align: middle;
 }

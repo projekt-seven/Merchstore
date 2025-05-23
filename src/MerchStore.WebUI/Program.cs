@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
 using MerchStore.Models;
+using MerchStore.Middleware;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Endpoints;
 using MerchStore.WebUI.Infrastructure;
@@ -12,13 +13,40 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(MerchStore.Application.AssemblyReference).Assembly);
 });
+=======
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
+else
+{
+    builder.Services.AddApplicationInsightsTelemetry(options =>
+    {
+        options.EnableAdaptiveSampling = false;
+        options.ApplicationVersion = "dev-" + DateTime.Now.ToString("yyyyMMdd-HHmm");
+        options.EnableDebugLogger = true;
+    });
+
+    builder.Services.Configure<TelemetryConfiguration>(config =>
+    {
+        config.TelemetryChannel = new InMemoryChannel
+        {
+            DeveloperMode = true
+        };
+    });
+}
+
+>>>>>>> dev
 // Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
@@ -78,6 +106,24 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
+builder.Services.AddHttpClient<IAiReviewService, AiReviewService>();
+
+builder.Services.AddHttpClient("AiReviewsHttpClient", client =>
+{
+    client.BaseAddress = new Uri("https://aireviews.drillbi.se"); // byt till korrekt adress
+});
+
+//builder.Services.AddHttpClient<AiReviewsClient>();
+
+// Add session services
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -113,7 +159,18 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "ApiKeyScheme"
     });
 
-    // Add requirement to use API key for all operations
+    // ✅ Add Bearer token support
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+
+    // Add security requirements
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -123,6 +180,17 @@ builder.Services.AddSwaggerGen(options =>
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        },
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
             Array.Empty<string>()
@@ -190,6 +258,10 @@ builder.Logging.AddConsole();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseSession();         
+app.UseSessionLogging();  
+
 
 app.UseCors("AllowAllOrigins");
 
