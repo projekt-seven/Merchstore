@@ -62,6 +62,61 @@
     </div>
 </div>
 
+<div class="row mt-5">
+    <div class="col-12">
+        <h4>Customer Reviews</h4>
+
+        @if (Model.Reviews?.Stats != null)
+        {
+            <div class="text-muted small mb-3">
+                <strong>@Model.Reviews.Stats.CurrentAverage.ToString("0.0")</strong> out of 5 stars
+                (based on @Model.Reviews.Stats.TotalReviews reviews)
+            </div>
+        }
+
+        @if (Model.Reviews?.Reviews != null && Model.Reviews.Reviews.Any())
+        {
+            @foreach (var review in Model.Reviews.Reviews)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>@review.Name</strong>
+                            <small class="text-muted">@review.Date.ToString("yyyy-MM-dd")</small>
+                        </div>
+                        <div class="mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star text-warning"></i>
+                                }
+                            }
+                        </div>
+                        <p class="mb-0">@review.Text</p>
+                    </div>
+                </div>
+            }
+        }
+        else if (Model.Reviews != null)
+        {
+            <div class="alert alert-info">
+                No reviews yet for this product.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Reviews are currently unavailable. Please try again later.
+            </div>
+        }
+    </div>
+</div>
+
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function() {
