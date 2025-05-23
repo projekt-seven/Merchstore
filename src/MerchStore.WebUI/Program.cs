@@ -18,12 +18,12 @@ using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
+
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(MerchStore.Application.AssemblyReference).Assembly);
 });
-=======
+
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddApplicationInsightsTelemetry();
@@ -46,7 +46,7 @@ else
     });
 }
 
->>>>>>> dev
+
 // Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
