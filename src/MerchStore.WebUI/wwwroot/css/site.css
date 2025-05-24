@@ -312,13 +312,15 @@ body {
   .footer-content {
     padding: 2rem 0 1rem;
   }
-  
-  .social-links, .payment-methods {
+
+  .social-links,
+  .payment-methods {
     justify-content: center;
     margin-top: 1rem;
   }
-  
-  .copyright, .payment-methods {
+
+  .copyright,
+  .payment-methods {
     text-align: center !important;
   }
 }
