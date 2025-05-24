@@ -1,4 +1,4 @@
-using MerchStore.Domain.Interfaces; // For IReviewRepository
+using MerchStore.Application.Common.Interfaces;// For IReviewRepository
 using MerchStore.Domain.Entities; // For Review
 using MerchStore.Domain.ValueObjects; // For ReviewStats
 using Microsoft.Extensions.DependencyInjection; // For GetRequiredService

@@ -1,0 +1,49 @@
+@model IEnumerable<MerchStore.Application.Products.Queries.ProductListItemDto>
+@{
+    ViewData["Title"] = "Produkter";
+}
+
+<h1 class="mb-4">📦 Produkter</h1>
+@if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Stäng"></button>
+    </div>
+}
+
+<a asp-action="Create" class="btn btn-success mb-3">
+    ➕ Skapa ny produkt
+</a>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Namn</th>
+            <th>Kategori</th>
+            <th>Pris (SEK)</th>
+            <th>Lager</th>
+            <th>Åtgärder</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Category</td>
+                <td>@product.Price.ToString("0.00")</td>
+                <td>@product.StockQuantity</td>
+
+                <td>
+                    <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-info btn-sm">🔍 Visa</a>
+                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">✏️ Ändra</a>
+                    <form asp-action="Delete" asp-route-id="@product.Id" method="get" class="d-inline"
+                        onsubmit="return confirm('Är du säker på att du vill radera produkten?');">
+                        <button type="submit" class="btn btn-sm btn-danger">🗑 Radera</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
