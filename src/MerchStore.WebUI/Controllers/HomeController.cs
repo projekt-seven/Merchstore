@@ -44,7 +44,23 @@ public class HomeController : Controller
             ["User"] = user
         }))
         {
-            _logger.LogInformation("Privacy page accessed by user: {User}", user);
+            _logger.LogInformation("Privacy page accessed by: {User}", user);
+        }
+
+        return View();
+    }
+
+    public IActionResult About()
+    {
+        var user = User.Identity?.Name ?? "Anonymous";
+
+        using (_logger.BeginScope(new Dictionary<string, object>
+        {
+            ["Action"] = "About",
+            ["User"] = user
+        }))
+        {
+            _logger.LogInformation("About page accessed by: {User}", user);
         }
 
         return View();
