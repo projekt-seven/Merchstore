@@ -44,8 +44,7 @@
                         @if (User.IsInRole(MerchStore.Models.UserRoles.Administrator))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin"
-                                    asp-action="Dashboard">ADMIN</a>
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Dashboard">DASHBOARD</a>
                             </li>
                         }
                         <li class="nav-item">
@@ -65,16 +64,19 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-    </div>    <!-- Anti-forgery token for AJAX requests -->
+    </div> <!-- Anti-forgery token for AJAX requests -->
     @Html.AntiForgeryToken()
 
     <footer class="footer">
         <div class="footer-content">
-            <div class="container">                <div class="row">
+            <div class="container">
+                <div class="row">
                     <div class="col-md-4 mb-4 mb-md-0">
                         <h5 class="footer-heading">About Us</h5>
-                        <p class="footer-text">North Waddle provides premium merchandise for tech enthusiasts and professionals. Quality products that showcase your passion.</p>
-                    </div>                    <div class="col-md-4 mb-4 mb-md-0">
+                        <p class="footer-text">North Waddle provides premium merchandise for tech enthusiasts and
+                            professionals. Quality products that showcase your passion.</p>
+                    </div>
+                    <div class="col-md-4 mb-4 mb-md-0">
                         <h5 class="footer-heading">Quick Links</h5>
                         <ul class="footer-links">
                             <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
