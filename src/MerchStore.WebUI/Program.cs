@@ -1,5 +1,4 @@
 using System.Reflection;
-using MediatR;
 using System.Text.Json.Serialization;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
@@ -18,12 +17,6 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(MerchStore.Application.AssemblyReference).Assembly);
-});
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -47,7 +40,6 @@ else
     });
 }
 
-
 // Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
@@ -58,34 +50,34 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY")
-                ?? builder.Configuration["ApiKey:Value"];
+    var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY") 
+                    ?? builder.Configuration["ApiKey:Value"];
 
-if (string.IsNullOrWhiteSpace(apiKeyValue))
-{
-    throw new InvalidOperationException("API key must be provided via environment variable or appsettings.");
-}
+    if (string.IsNullOrWhiteSpace(apiKeyValue))
+    {
+        throw new InvalidOperationException("API key must be provided via environment variable or appsettings.");
+    }
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.Name = "MerchStore.Auth";
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.Name = "MerchStore.Auth";
 
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-    options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.SlidingExpiration = true;
 
-    options.LoginPath = "/Account/Login";
-    options.LogoutPath = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-})
-.AddApiKey(apiKeyValue);
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    })
+    .AddApiKey(apiKeyValue);
 
 // Add API Key authorization
 builder.Services.AddAuthorization(options =>
@@ -134,12 +126,6 @@ builder.Services.AddSwaggerGen(options =>
         Title = "MerchStore API",
         Version = "v1",
         Description = "API for MerchStore product catalog"
-    });
-
-    options.SwaggerDoc("admin", new OpenApiInfo
-    {
-        Title = "Admin API",
-        Version = "v1"
     });
 
     // Include XML comments (if enabled in project settings)
@@ -203,18 +189,6 @@ builder.Services.AddSwaggerGen(options =>
     {
         return apiDesc.ActionDescriptor?.DisplayName;
     });
-
-    // Add grouping via namespace
-    options.DocInclusionPredicate((docName, apiDesc) =>
-    {
-        if (docName == "v1")
-            return !apiDesc.GroupName?.Equals("Admin", StringComparison.OrdinalIgnoreCase) ?? true;
-
-        if (docName == "admin")
-            return apiDesc.GroupName?.Equals("Admin", StringComparison.OrdinalIgnoreCase) ?? false;
-
-        return false;
-    });
 });
 
 builder.Services.AddCors(options =>
@@ -228,8 +202,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-
 var app = builder.Build();
+builder.Logging.AddConsole();
+
 // Configure the HTTP request pipeline.
 
 // Seed databasen endast i Development
@@ -252,10 +227,11 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-        options.SwaggerEndpoint("/swagger/admin/swagger.json", "Admin API");
     });
 }
-builder.Logging.AddConsole();
+
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
