@@ -19,6 +19,7 @@ html {
 html {
   position: relative;
   min-height: 100%;
+  overflow-y: scroll;
 }
 
 body {
@@ -323,4 +324,7 @@ body {
   .payment-methods {
     text-align: center !important;
   }
+}
+html, body {
+  overflow-x: hidden;
 }
