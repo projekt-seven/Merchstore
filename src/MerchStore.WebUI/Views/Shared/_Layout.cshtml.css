@@ -44,11 +44,11 @@ button.accept-policy {
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+  background-color: #f8f8f8;
+  border-top: 1px solid #e5e5e5;
+  position: relative;
+  margin-top: 4rem;
 }
 
 .shopping-cart-box {

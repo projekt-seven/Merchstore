@@ -39,7 +39,7 @@
                             <a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">STORE</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">PRIVACY</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">ABOUT US</a>
                         </li>
                         @if (User.IsInRole(MerchStore.Models.UserRoles.Administrator))
                         {
@@ -65,14 +65,51 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-    </div>
-
-    <!-- Anti-forgery token for AJAX requests -->
+    </div>    <!-- Anti-forgery token for AJAX requests -->
     @Html.AntiForgeryToken()
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - MerchStore.WebUI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="container">                <div class="row">
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <h5 class="footer-heading">About Us</h5>
+                        <p class="footer-text">North Waddle provides premium merchandise for tech enthusiasts and professionals. Quality products that showcase your passion.</p>
+                    </div>                    <div class="col-md-4 mb-4 mb-md-0">
+                        <h5 class="footer-heading">Quick Links</h5>
+                        <ul class="footer-links">
+                            <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li><a asp-area="" asp-controller="Catalog" asp-action="Index">Store</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="footer-heading">Connect With Us</h5>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="copyright">&copy; 2025 - North Waddle - All Rights Reserved</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="payment-methods text-md-end">
+                            <i class="bi bi-credit-card" title="Credit Card"></i>
+                            <i class="bi bi-paypal" title="PayPal"></i>
+                            <i class="bi bi-wallet2" title="Digital Wallet"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
