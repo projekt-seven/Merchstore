@@ -1,16 +1,17 @@
 @model MerchStore.Application.Products.Commands.CreateProductRequest
 
 @{
-	ViewData["Title"] = "Skapa ny produkt";
+	ViewData["Title"] = "Create New Product";
 }
 
-<h2 class="mb-4">Skapa ny produkt</h2>
+<h2 class="mb-4">Create New Product</h2>
 
 <div class="card shadow-sm">
 	<div class="card-body">
 		<form asp-action="Create" method="post">
-			<!-- Visa valideringsfel här -->
+			<!-- Display validation errors here -->
 			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
 			<div class="mb-3">
 				<label asp-for="Name" class="form-label"></label>
 				<input asp-for="Name" class="form-control" />
@@ -46,18 +47,18 @@
 			<div class="mb-3">
 				<label asp-for="ImageUrl" class="form-label"></label>
 				<input asp-for="ImageUrl" class="form-control" />
-				<div class="form-text">Länk till produktbild (valfritt)</div>
+				<div class="form-text">Link to product image (optional)</div>
 				<div class="text-danger" asp-validation-for="ImageUrl"></div>
 			</div>
 
 			<div class="mb-3">
-				<label asp-for="Tags" class="form-label">Taggar (kommatecken-separerade)</label>
+				<label asp-for="Tags" class="form-label">Tags (comma-separated)</label>
 				<input name="Tags" class="form-control" />
-				<div class="form-text">Ex: hoodie, nyhet, svart</div>
+				<div class="form-text">Example: hoodie, new, black</div>
 			</div>
 
-			<button type="submit" class="btn btn-success">Skapa produkt</button>
-			<a asp-action="Index" class="btn btn-outline-secondary ms-2">↩ Tillbaka</a>
+			<button type="submit" class="btn btn-success">Create Product</button>
+			<a asp-action="Index" class="btn btn-outline-secondary ms-2">↩ Back</a>
 		</form>
 	</div>
 </div>
