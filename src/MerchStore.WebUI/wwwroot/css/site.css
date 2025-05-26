@@ -19,6 +19,7 @@ html {
 html {
   position: relative;
   min-height: 100%;
+  overflow-y: scroll;
 }
 
 body {
@@ -323,4 +324,72 @@ body {
   .payment-methods {
     text-align: center !important;
   }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+.arctic-hero {
+  text-align: center;
+  padding: 5rem 1rem 3rem;
+  background-color: #f8f8f8;
+}
+
+.arctic-banner {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 4rem;
+}
+
+.arctic-slogan {
+  font-size: 1rem;
+  color: #219099;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.arctic-banner::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  width: 380px;
+  height: 100px; 
+  background-color: #219099;
+  z-index: 0;
+  border-radius: 4px;
+}
+
+.arctic-title {
+  position: relative;
+  z-index: 1;
+  font-size: 2.8rem;
+  font-weight: bold;
+  line-height: 1.2;
+  color: white; /* All text är vit */
+  margin: 0;
+  padding: 1rem 2rem;
+  text-shadow:
+    -1px -1px 0 #219099,
+     1px -1px 0 #219099,
+    -1px  1px 0 #219099,
+     1px  1px 0 #219099;
+}
+
+.value-card {
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.value-card:hover {
+    background-color: #219099;
+    color: white;
+    transform: scale(1.03);
+}
+
+.value-card:hover .card-title,
+.value-card:hover .card-text,
+.value-card:hover i {
+    color: white !important;
 }
