@@ -54,8 +54,9 @@ jobs:
               AI_API_USERNAME="${{ secrets.AI_API_USERNAME }}" \
               AI_API_PASSWORD="${{ secrets.AI_API_PASSWORD }}"
 
-      - name: Restart container app (force refresh)
+      - name: Force refresh container app by triggering new revision
         run: |
-          az containerapp restart \
+          az containerapp update \
             --name northwaddleapp \
-            --resource-group NorthWaddleRG
+            --resource-group NorthWaddleRG \
+            --tags force-revision=$(date +%s)
