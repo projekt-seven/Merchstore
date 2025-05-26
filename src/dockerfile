@@ -6,7 +6,7 @@ WORKDIR /src
 COPY . .
 
 # Lägg till NuGet-källa uttryckligen
-RUN dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
+RUN dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org || true
 
 # Set working directory to WebUI
 WORKDIR /src/MerchStore.WebUI
