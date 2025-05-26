@@ -26,9 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-  <ProjectReference Include="..\..\src\MerchStore.Application\MerchStore.Application.csproj" />
-  <ProjectReference Include="..\..\src\MerchStore.Infrastructure\MerchStore.Infrastructure.csproj" />
-</ItemGroup>
+    <ProjectReference Include="..\..\src\MerchStore.Infrastructure\MerchStore.Infrastructure.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">

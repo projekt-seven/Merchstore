@@ -1,5 +1,5 @@
 using MerchStore.Domain.Entities;
-using MerchStore.Application.Common.Interfaces;
+using MerchStore.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MerchStore.Infrastructure.Persistence.Repositories;
@@ -36,5 +36,5 @@ public class OrderRepository : Repository<Order, Guid>, IOrderRepository
         .ToListAsync(cancellationToken);
     }
 
-
+    
 }

@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using MerchStore.Application.Common.Interfaces;
+using MerchStore.Domain.Interfaces;
 using MerchStore.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
