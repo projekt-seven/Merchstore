@@ -1,6 +1,6 @@
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.Domain.Entities;
-using MerchStore.Domain.Interfaces;
+using MerchStore.Application.Common.Interfaces;
 
 namespace MerchStore.Application.Services;
 
