@@ -9,6 +9,7 @@
 <div class="card shadow-sm">
 	<div class="card-body">
 		<form asp-action="Create" method="post">
+			@Html.AntiForgeryToken()
 			<!-- Display validation errors here -->
 			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
