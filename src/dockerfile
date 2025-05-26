@@ -1,23 +1,26 @@
 # ---------- Build stage ----------
-    FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-    WORKDIR /src
-    
-    # Copy all project files (allt i src/)
-    COPY . .
-    
-    # Set working directory to WebUI
-    WORKDIR /src/MerchStore.WebUI
-    
-    # Restore and publish
-    RUN dotnet restore
-    RUN dotnet publish -c Release -o /publish --no-restore
-    
-    # ---------- Runtime stage ----------
-    FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
-    WORKDIR /app
-    
-    COPY --from=build /publish .
-    
-    EXPOSE 8080
-    
-    ENTRYPOINT ["dotnet", "MerchStore.WebUI.dll"]
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy all project files (allt i src/)
+COPY . .
+
+# Lägg till NuGet-källa uttryckligen
+RUN dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
+
+# Set working directory to WebUI
+WORKDIR /src/MerchStore.WebUI
+
+# Restore and publish
+RUN dotnet restore
+RUN dotnet publish -c Release -o /publish --no-restore
+
+# ---------- Runtime stage ----------
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+
+COPY --from=build /publish .
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "MerchStore.WebUI.dll"]
