@@ -1,5 +1,4 @@
 using MerchStore.Application.Common.Interfaces;
-using MerchStore.Domain.Interfaces;
 
 namespace MerchStore.Infrastructure.Persistence.Repositories;
 

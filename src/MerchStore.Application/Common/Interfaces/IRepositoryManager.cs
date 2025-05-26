@@ -1,4 +1,4 @@
-using MerchStore.Domain.Interfaces;
+using MerchStore.Application.Common.Interfaces;
 
 namespace MerchStore.Application.Common.Interfaces;
 

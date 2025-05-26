@@ -1,7 +1,7 @@
 using FluentAssertions;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Enums;
-using MerchStore.Domain.Interfaces;
+using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.ValueObjects;
 using Moq;
 

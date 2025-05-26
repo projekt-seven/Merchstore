@@ -1,5 +1,5 @@
 using MerchStore.Domain.Entities;
-using MerchStore.Domain.Interfaces;
+using MerchStore.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MerchStore.Infrastructure.Persistence.Repositories;
@@ -23,4 +23,8 @@ public class ProductRepository : Repository<Product, Guid>, IProductRepository
     {
         return await _dbSet.Where(p => p.Category == category).ToListAsync();
     }
+   public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken)
+{
+    return await _dbSet.ToListAsync(cancellationToken);
+}
 }
