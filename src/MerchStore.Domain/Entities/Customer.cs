@@ -10,6 +10,7 @@ public record Customer
     public string Address { get; private set; } = string.Empty;
     public string City { get; private set; } = string.Empty;
     public string PostalCode { get; private set; } = string.Empty;
+    public ICollection<Order> Orders { get; private set; } = new List<Order>();
 
     // Constructor for EF Core
     public Customer()

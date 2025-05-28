@@ -12,7 +12,8 @@ public class Order : Entity<Guid>
         Cancelled
     }
 
-    public Customer Customer { get; private set; }
+    public Guid CustomerId { get; set; }
+    public Customer Customer { get; set; } = null!;
     private readonly List<OrderItem> _items = new List<OrderItem>();
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
     public Money TotalPrice { get; private set; } = Money.FromSEK(0);
@@ -25,6 +26,7 @@ public class Order : Entity<Guid>
     {
         ArgumentNullException.ThrowIfNull(customer, nameof(customer));
         Customer = customer;
+        CustomerId = customer.Id;
     }
 
     public void AddItem(OrderItem item)
