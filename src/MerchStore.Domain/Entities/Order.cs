@@ -32,7 +32,6 @@ public class Order : Entity<Guid>
     public void AddItem(OrderItem item)
     {
         ArgumentNullException.ThrowIfNull(item, nameof(item));
-
         _items.Add(item);
         RecalculateTotalPrice();
     }

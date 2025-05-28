@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MerchStore.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250528094310_AddCustomerOrderRelation")]
-    partial class AddCustomerOrderRelation
+    [Migration("20250528131441_InitClean")]
+    partial class InitClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,9 +68,6 @@ namespace MerchStore.Infrastructure.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("CustomerId1")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("TEXT");
 
@@ -83,8 +80,6 @@ namespace MerchStore.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("CustomerId1");
 
                     b.HasIndex("OrderDate");
 
@@ -189,14 +184,10 @@ namespace MerchStore.Infrastructure.Migrations
             modelBuilder.Entity("MerchStore.Domain.Entities.Order", b =>
                 {
                     b.HasOne("MerchStore.Domain.Entities.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MerchStore.Domain.Entities.Customer", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerId1");
 
                     b.Navigation("Customer");
                 });

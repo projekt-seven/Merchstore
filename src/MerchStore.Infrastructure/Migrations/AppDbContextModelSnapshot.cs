@@ -65,9 +65,6 @@ namespace MerchStore.Infrastructure.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("CustomerId1")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("TEXT");
 
@@ -80,8 +77,6 @@ namespace MerchStore.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("CustomerId1");
 
                     b.HasIndex("OrderDate");
 
@@ -186,14 +181,10 @@ namespace MerchStore.Infrastructure.Migrations
             modelBuilder.Entity("MerchStore.Domain.Entities.Order", b =>
                 {
                     b.HasOne("MerchStore.Domain.Entities.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MerchStore.Domain.Entities.Customer", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerId1");
 
                     b.Navigation("Customer");
                 });
