@@ -8,6 +8,8 @@ using MerchStore.Middleware;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Endpoints;
 using MerchStore.WebUI.Infrastructure;
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Authentication;
@@ -57,6 +59,9 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 var apiKeyValue = Environment.GetEnvironmentVariable("BASIC_PRODUCT_API_KEY")
                 ?? builder.Configuration["ApiKey:Value"];
