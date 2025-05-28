@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
-using MerchStore.Application.Common.Interfaces;
 using MerchStore.Application.Services;
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.Application.Services.Implementations;

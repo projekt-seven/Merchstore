@@ -43,22 +43,20 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Customer)
+            .WithMany(c => c.Orders)
+            .HasForeignKey(o => o.CustomerId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Apply all IEntityTypeConfiguration implementations from the current assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // ValueConverter for the Money value object
-        // Converts Money to decimal for database storage and back to Money when reading
         var moneyConverter = new ValueConverter<Money, decimal>(
             v => v.Amount,
             v => Money.FromSEK(v)
         );
-
-        // Configure relationship: Order requires a Customer
-        modelBuilder.Entity<Order>()
-            .HasOne(o => o.Customer)
-            .WithMany()
-            .HasForeignKey("CustomerId")
-            .IsRequired();
 
         // Apply the Money converter to the TotalPrice property on Order
         modelBuilder.Entity<Order>()
@@ -80,7 +78,7 @@ public class AppDbContext : DbContext
             entity.Property(u => u.Role).IsRequired().HasMaxLength(20);
             entity.Property(u => u.CreatedAt).IsRequired();
         });
-        
+
         // ValueConverter for serializing/deserializing Product.Tags as JSON
         var tagsConverter = new ValueConverter<List<string>, string>(
             v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
@@ -89,9 +87,9 @@ public class AppDbContext : DbContext
 
         // ValueComparer to compare List<string> values for Product.Tags
         var tagsComparer = new ValueComparer<List<string>>(
-            (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2), // Equality check
-            c => c == null ? 0 : c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // Hash code
-            c => c == null ? new List<string>() : c.ToList() // Snapshot copy
+            (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2),
+            c => c == null ? 0 : c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+            c => c == null ? new List<string>() : c.ToList()
         );
 
         // Apply both converter and comparer to Product.Tags
@@ -100,4 +98,4 @@ public class AppDbContext : DbContext
             .HasConversion(tagsConverter)
             .Metadata.SetValueComparer(tagsComparer);
     }
-} 
+}
