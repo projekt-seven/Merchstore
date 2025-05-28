@@ -1,0 +1,31 @@
+@model List<MerchStore.Application.DTOs.OrderListItemDto>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1 class="mb-4">Orders</h1>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Total (SEK)</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.CustomerFullName</td>
+                <td>@order.TotalAmount.ToString("0.00")</td>
+                <td>@order.OrderDate.ToShortDateString()</td>
+                <td>@order.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
