@@ -230,13 +230,33 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
 
-// Seed databasen endast i Development
-if (app.Environment.IsDevelopment())
+// CLI-baserad seeding – körs bara om flagga ges
+if (args.Contains("--seed") || args.Contains("--reset-seed"))
 {
-    app.Services.SeedDatabaseAsync().Wait();
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        var seeder = services.GetRequiredService<MerchStore.Infrastructure.Persistence.AppDbContextSeeder>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        var reset = args.Contains("--reset-seed");
+
+        logger.LogInformation($"Running database seeding (Reset={reset})...");
+        await seeder.SeedAsync(resetDatabase: reset);
+        logger.LogInformation("Seeding complete.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Seeding failed: {ex.Message}");
+        throw;
+    }
+
+    return; // Avsluta programmet efter seeding
 }
+
 
 // Konfigurera felhantering och HSTS i Production
 if (app.Environment.IsProduction())
@@ -267,8 +287,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseSession();         
 app.UseSessionLogging();  
-
-
 app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
