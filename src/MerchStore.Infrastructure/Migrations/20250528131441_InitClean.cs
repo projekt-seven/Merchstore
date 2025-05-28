@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MerchStore.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCustomerOrderRelation : Migration
+    public partial class InitClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,8 +71,7 @@ namespace MerchStore.Infrastructure.Migrations
                     CustomerId = table.Column<Guid>(type: "TEXT", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "TEXT", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    CustomerId1 = table.Column<Guid>(type: "TEXT", nullable: true)
+                    Status = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,11 +82,6 @@ namespace MerchStore.Infrastructure.Migrations
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Customers_CustomerId1",
-                        column: x => x.CustomerId1,
-                        principalTable: "Customers",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -120,11 +114,6 @@ namespace MerchStore.Infrastructure.Migrations
                 name: "IX_Orders_CustomerId",
                 table: "Orders",
                 column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_CustomerId1",
-                table: "Orders",
-                column: "CustomerId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_OrderDate",

@@ -15,15 +15,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasKey(o => o.Id);
 
         builder.HasOne(o => o.Customer)
-            .WithMany()
-            .HasForeignKey("CustomerId")
-            .IsRequired();
+            .WithMany(c => c.Orders)
+            .HasForeignKey(o => o.CustomerId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure the foreign key relationship with OrderItem
-        builder.HasMany(o => o.Items)
-            .WithOne(oi => oi.Order)
-            .HasForeignKey(oi => oi.OrderId)
-            .OnDelete(DeleteBehavior.Cascade); // Cascade delete if an order is deleted
 
         // Configure the OrderDate property
         builder.Property(o => o.OrderDate)

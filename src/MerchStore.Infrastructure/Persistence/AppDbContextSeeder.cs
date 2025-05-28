@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.ValueObjects;
+using System.Reflection;
+
 
 namespace MerchStore.Infrastructure.Persistence;
 
@@ -12,8 +14,8 @@ namespace MerchStore.Infrastructure.Persistence;
 /// </summary>
 public class AppDbContextSeeder
 {
-    private readonly ILogger<AppDbContextSeeder> _logger;
     private readonly AppDbContext _context;
+    private readonly ILogger<AppDbContextSeeder> _logger;
     private readonly IConfiguration _configuration;
 
     /// <summary>
@@ -31,20 +33,25 @@ public class AppDbContextSeeder
     /// <summary>
     /// Seeds the database with initial data
     /// </summary>
-    public virtual async Task SeedAsync()
+    public virtual async Task SeedAsync(bool resetDatabase = false)
     {
         try
         {
-            // Ensure the database is created (only needed for in-memory database)
-            // For SQL Server, you would use migrations instead
-            await _context.Database.EnsureCreatedAsync();
+            if (resetDatabase)
+            {
+                _logger.LogWarning("ResetDatabase=true → Deleting and recreating database...");
+                await _context.Database.EnsureDeletedAsync();
+                await _context.Database.EnsureCreatedAsync();
+            }
+            else
+            {
+                // Endast skapa om databasen om den inte redan finns
+                await _context.Database.EnsureCreatedAsync();
+            }
 
-            // Seed products if none exist
+            // Seed data
             await SeedProductsAsync();
-
-            // Seed orders if none exist
             await SeedOrdersAsync();
-
             await SeedUsersAsync();
         }
         catch (Exception ex)
@@ -54,15 +61,17 @@ public class AppDbContextSeeder
         }
     }
 
+
     /// <summary>
     /// Seeds the database with sample products
     /// </summary>
     private async Task SeedProductsAsync()
     {
-        // Check if we already have products (to avoid duplicate seeding)
-        if (!await _context.Products.AnyAsync())
+        if (await _context.Products.AnyAsync())
         {
-            _logger.LogInformation("Seeding products...");
+            _logger.LogInformation("Database already contains products. Skipping product seed.");
+            return;
+        }
 
         var products = new List<Product>
         {
@@ -138,86 +147,100 @@ public class AppDbContextSeeder
                 "stationery",
                 new List<string> { "North Waddle", "notebook", "practical", "penguin" })
         };
-        
-            await _context.Products.AddRangeAsync(products);
-            await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Product seeding completed successfully.");
-        }
-        else
-        {
-            _logger.LogInformation("Database already contains products. Skipping product seed.");
-        }
+        _logger.LogInformation("Seeding products...");
+
+        await _context.Products.AddRangeAsync(products);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation($"✅ Seeded {products.Count} products.");
     }
 
+
+
+    private async Task<List<Customer>> SeedCustomersAsync()
+    {
+        if (await _context.Customers.AnyAsync())
+        {
+            _logger.LogInformation("Customers already exist. Skipping customer seed.");
+            return await _context.Customers.ToListAsync();
+        }
+
+        _logger.LogInformation("Seeding customers...");
+
+        var customers = new List<Customer>
+        {
+            new Customer("Johan", "Svensson", "johan.svensson@example.com", "0701234567", "Storgatan 1", "Stockholm", "11122"),
+            new Customer("Anna", "Karlsson", "anna.karlsson@example.com", "0707654321", "Långgatan 5", "Göteborg", "41123"),
+            new Customer("Erik", "Johansson", "erik.johansson@example.com", "0709876543", "Kyrkogatan 3", "Malmö", "21124"),
+            new Customer("Maria", "Andersson", "maria.andersson@example.com", "0706543210", "Västra Hamngatan 7", "Uppsala", "75125"),
+            new Customer("Lars", "Nilsson", "lars.nilsson@example.com", "0703210987", "Östra Långgatan 9", "Västerås", "72126"),
+            new Customer("Karin", "Bergström", "karin.bergstrom@example.com", "0704321098", "Kungsgatan 11", "Örebro", "70127"),
+            new Customer("Olof", "Lindgren", "olof.lindgren@example.com", "0705432109", "Drottninggatan 13", "Linköping", "58128"),
+            new Customer("Sofia", "Eriksson", "sofia.eriksson@example.com", "0706543211", "Nygatan 15", "Helsingborg", "25129"),
+            new Customer("Gustav", "Persson", "gustav.persson@example.com", "0707654322", "Södra Vägen 17", "Jönköping", "55130"),
+            new Customer("Elin", "Olsson", "elin.olsson@example.com", "0708765432", "Norra Långgatan 19", "Lund", "22131")
+        };
+
+        await _context.Customers.AddRangeAsync(customers);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation($"✅ Seeded {customers.Count} customers.");
+
+        return customers;
+    }
+    
     private async Task SeedOrdersAsync()
     {
-        // Check if we already have orders (to avoid duplicate seeding)
-        if (!await _context.Orders.AnyAsync())
-        {
-            _logger.LogInformation("Seeding orders...");
-
-            // Retrieve the seeded products
-            var products = await _context.Products.ToListAsync();
-
-            if (products.Count < 2)
-            {
-                _logger.LogWarning("Not enough products available to seed orders.");
-                return;
-            }
-
-            // Create customers
-            var customers = new List<Customer>
-            {
-                new Customer("Johan", "Svensson", "johan.svensson@example.com", "0701234567", "Storgatan 1", "Stockholm", "11122"),
-                new Customer("Anna", "Karlsson", "anna.karlsson@example.com", "0707654321", "Långgatan 5", "Göteborg", "41123"),
-                new Customer("Erik", "Johansson", "erik.johansson@example.com", "0709876543", "Kyrkogatan 3", "Malmö", "21124"),
-                new Customer("Maria", "Andersson", "maria.andersson@example.com", "0706543210", "Västra Hamngatan 7", "Uppsala", "75125"),
-                new Customer("Lars", "Nilsson", "lars.nilsson@example.com", "0703210987", "Östra Långgatan 9", "Västerås", "72126"),
-                new Customer("Karin", "Bergström", "karin.bergstrom@example.com", "0704321098", "Kungsgatan 11", "Örebro", "70127"),
-                new Customer("Olof", "Lindgren", "olof.lindgren@example.com", "0705432109", "Drottninggatan 13", "Linköping", "58128"),
-                new Customer("Sofia", "Eriksson", "sofia.eriksson@example.com", "0706543211", "Nygatan 15", "Helsingborg", "25129"),
-                new Customer("Gustav", "Persson", "gustav.persson@example.com", "0707654322", "Södra Vägen 17", "Jönköping", "55130"),
-                new Customer("Elin", "Olsson", "elin.olsson@example.com", "0708765432", "Norra Långgatan 19", "Lund", "22131")
-            };
-
-            // Create orders for each customer
-            var orders = customers.Select(customer => new Order(customer)).ToList();
-
-            // Use reflection to set the OrderDate property
-            var orderDateProperty = typeof(Order).GetProperty("OrderDate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            if (orderDateProperty != null)
-            {
-                orderDateProperty.SetValue(orders[1], DateTime.UtcNow.AddDays(-8));
-                orderDateProperty.SetValue(orders[4], DateTime.UtcNow.AddDays(-2));
-                orderDateProperty.SetValue(orders[6], DateTime.UtcNow);
-                orderDateProperty.SetValue(orders[9], DateTime.UtcNow.AddDays(-7));
-            }
-
-            // Update the status using existing methods
-            orders[0].MarkAsCompleted();
-            orders[2].CancelOrder();
-            orders[3].MarkAsCompleted();
-            orders[5].MarkAsCompleted();
-            orders[7].CancelOrder();
-            orders[8].MarkAsCompleted();
-
-            foreach (var order in orders)
-            {
-                order.AddItem(new OrderItem(products[0].Id, 2, products[0].Price)); // First product
-                order.AddItem(new OrderItem(products[1].Id, 1, products[1].Price)); // Second product
-            }
-
-            await _context.Orders.AddRangeAsync(orders);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Order seeding completed successfully.");
-        }
-        else
+        if (await _context.Orders.AnyAsync())
         {
             _logger.LogInformation("Database already contains orders. Skipping order seed.");
+            return;
         }
+
+        _logger.LogInformation("Seeding orders...");
+
+        var products = await _context.Products.ToListAsync();
+        if (products.Count < 2)
+        {
+            _logger.LogWarning("Not enough products available to seed orders.");
+            return;
+        }
+
+        var customers = await SeedCustomersAsync();
+        var orders = customers.Select(c => new Order(c)).ToList();
+
+        // Set specific order dates on selected orders
+        var orderDates = new Dictionary<int, DateTime>
+        {
+            [1] = DateTime.UtcNow.AddDays(-8),
+            [4] = DateTime.UtcNow.AddDays(-2),
+            [6] = DateTime.UtcNow,
+            [9] = DateTime.UtcNow.AddDays(-7)
+        };
+
+        var orderDateProperty = typeof(Order).GetProperty("OrderDate", BindingFlags.NonPublic | BindingFlags.Instance);
+        foreach (var (index, date) in orderDates)
+        {
+            orderDateProperty?.SetValue(orders[index], date);
+        }
+
+        // Mark orders as completed or cancelled
+        new[] { 0, 3, 5, 8 }.ToList().ForEach(i => orders[i].MarkAsCompleted());
+        new[] { 2, 7 }.ToList().ForEach(i => orders[i].CancelOrder());
+
+        // Add items to each order
+        foreach (var order in orders)
+        {
+            order.AddItem(new OrderItem(products[0].Id, 2, products[0].Price));
+            order.AddItem(new OrderItem(products[1].Id, 1, products[1].Price));
+        }
+
+        await _context.Orders.AddRangeAsync(orders);
+        await _context.SaveChangesAsync();
+
+        var totalItems = orders.Sum(o => o.Items.Count);
+        _logger.LogInformation($"✅ Seeded {orders.Count} orders with {totalItems} total items.");
     }
 
     private async Task SeedUsersAsync()
@@ -253,6 +276,8 @@ public class AppDbContextSeeder
 
             _context.Users.Add(new User(adminUsername, hashedPassword, adminEmail, adminRole));
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"✅ Admin user '{adminUsername}' seeded successfully.");
         }
     }
 
